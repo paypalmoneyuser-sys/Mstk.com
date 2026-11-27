@@ -232,3 +232,29 @@ This batch covers original-list entries #18–#21. #21 Google Slides was already
 - Google API Services User Data Policy: https://developers.google.com/terms/api-services-user-data-policy
 
 **Batch result:** 3 new unique entries (#18–#20) now have official-source notes; #21 was revalidated. Total unique original-list entries with some preliminary official-source research: 18/58. This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from the list: 0. Grok API and Meta Model API are blocked by adult-only API terms; Claude Design is a consumer product with an 18+ age requirement and no separate integration API established. Google Slides remains a candidate pending OAuth and privacy work. No paid services or integrations were enabled.
+
+
+## Official-source research batch 6 — 2026-11-27
+
+This batch covers original-list entries #22–#25. These are preliminary official-source notes only; they do not constitute a full audit or a successful integration test. No accounts, keys, paid plans, credits or live integrations were enabled.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 22 | Fable 5.2 | Identified in Anthropic's model documentation as the Claude Fable 5.2 model (model ID `claude-fable-5-2`), released 2026-11-09. The documented interface accepts text and image input and returns text; the documentation lists a 1M-token context window and up to 128K output tokens. The reviewed documentation describes 30-day retention; zero-data-retention is not automatic and requires Anthropic authorization. | Published rates in the reviewed model/pricing documentation: $8 per million input tokens and $40 per million output tokens; caching and batch processing have separate rates. | Do not enable until adult-account eligibility, regional access, retention/privacy controls, provider terms, and hard cost limits are verified. It is a model/API candidate, not a verified live integration. |
+| 23 | Higgsfield MCP | Official help material describes connecting an MCP client to the user's own Higgsfield account through OAuth. This is an account-connected workflow, not evidence of a general shared MSTK model API. Generation actions can consume the connected account's credits. Developer Terms make the account holder responsible for actions and costs initiated by an agent. Separate API Terms reviewed for this service require developers and end users to be 18+ and restrict competing/resale services without written consent. | Uses the connected account's credits; a website free/unlimited offer does not establish free MCP/API usage. | Do not connect a user's personal account or expose this as an MSTK-hosted integration. Reconsider only after written permission, adult eligibility and a safe delegated-authorization design are confirmed. |
+| 24 | Midjourney | Official Terms effective 2026-05-27 require users to be at least 13 and to satisfy the applicable local digital-consent age; where the user cannot legally consent, a parent or legal guardian must agree. The reviewed official material describes paid subscription plans. No official public developer API was established in the sources reviewed. | Subscription-based access; no verified official public API quota or API price established. | Do not use unofficial APIs, browser automation or credential-sharing as a substitute. No direct MSTK integration unless Midjourney provides an authorized API or written permission and eligibility is confirmed. |
+| 25 | Nano Banana | Identified as Google's Gemini image-model family. API pricing is model-specific and must be checked against the exact model/version before any cost estimate. Gemini API Additional Terms reviewed state that API users must be 18+ and API clients may not be targeted to, or likely accessed by, under-18 users. | Model-specific paid/token or image-generation pricing; no single family-wide price should be assumed. | Exclude from current teen-facing MSTK API access under the reviewed terms. Do not attempt to work around the age or audience restriction. |
+
+### Official sources for batch 6
+
+- Anthropic model overview: https://docs.anthropic.com/en/docs/about-claude/models/overview
+- Anthropic API pricing: https://docs.anthropic.com/en/docs/about-claude/pricing
+- Higgsfield MCP connection help: https://help.higgsfield.ai/
+- Higgsfield Developer Terms: https://higgsfield.ai/legal/developer-terms
+- Higgsfield API Terms: https://higgsfield.ai/legal/api-terms
+- Midjourney Terms of Service: https://docs.midjourney.com/hc/en-us/articles/32083055291277-Terms-of-Service
+- Midjourney plans: https://www.midjourney.com/plans
+- Gemini API Additional Terms: https://ai.google.dev/gemini-api/terms
+- Gemini API pricing: https://ai.google.dev/gemini-api/docs/pricing
+
+**Batch result:** 4 more entries have preliminary official-source notes (22/58 unique original-list entries with some preliminary research across all batches). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Higgsfield MCP and Midjourney lack a verified authorized shared API route for the proposed use; Nano Banana is excluded under the reviewed Gemini API age/audience terms. No paid services, credits or integrations were enabled.
