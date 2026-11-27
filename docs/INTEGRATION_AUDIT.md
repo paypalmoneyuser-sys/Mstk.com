@@ -367,3 +367,25 @@ A follow-up check of the current official thedotmack/claude-mem repository and i
 Official current licence evidence:
 - https://github.com/thedotmack/claude-mem/blob/main/docs/license.md
 - https://github.com/thedotmack/claude-mem/blob/main/package.json
+
+## Official-source research batch 11 — 2026-11-28
+
+This batch reviews original-list entries #42–#45. Findings are preliminary official-source notes, not full audits or live integration tests. No accounts, credentials, subscriptions, payments, or integrations were created.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 42 | Anthropic free Claude Code setup | Anthropic's official Claude Code documentation describes installation and authentication through a Claude account or supported API/third-party platform credentials. Claude Code is a developer coding agent, not a separate free hosted model API. Free/paid availability depends on the account or provider route selected; do not interpret installation instructions or an account trial as a free unlimited API. | Usage is governed by the selected Claude subscription or API provider's pricing, limits and rate controls. API usage is billed separately from consumer subscription unless the provider explicitly says otherwise. | Keep as a developer tool, not an MSTK customer-facing model connector. Do not create accounts or use developer credentials on behalf of the minor project owner where age/contract terms do not allow it. Never proxy consumer subscription access as a public API. |
+| 43 | Task Observer | The name is ambiguous and may refer to more than one repository/tool. This pass did not establish a canonical official publisher, maintained repository, authoritative licence, or supported hosted API matching the original list item. | Unknown; no reliable official pricing or quota source identified. | Block pending exact repository or official product URL. Do not install or execute an unidentified observer/agent tool. Before any evaluation, inspect publisher, source, licence, dependencies, telemetry, filesystem/process/network permissions, secrets handling and maintenance status. |
+| 44 | OmniRoute | Identified as an open-source routing/proxy project for using multiple AI model providers through a unified endpoint. Its official repository describes provider routing and local deployment; it is infrastructure, not a model provider. A local proxy does not grant permission to reuse consumer subscriptions or bypass provider API terms, age rules, rate limits or access controls. | Software may be self-hosted, but upstream model requests remain subject to each provider's API pricing and quotas; compute, hosting, logging and maintenance have separate costs. No free inference quota is created by OmniRoute. | Do not deploy as a public multi-tenant service yet. A future isolated evaluation requires licence and dependency audit, provider-by-provider terms/age review, key isolation, SSRF and egress controls, tenant-level rate/cost caps, log redaction, abuse handling and confirmation that every upstream integration is an authorised API. |
+| 45 | Poe | Quora's official Poe Terms state a minimum age of 13 and require parent/guardian consent for users below the age of majority. Poe offers user-facing bots and a creator platform; its API/developer offerings have separate documentation and commercial rules. The consumer Terms alone do not establish permission to repackage Poe bots or route consumer accounts through a third-party service. | Poe subscriptions and points/compute limits are consumer entitlements; API/developer pricing and quotas are separate and must be verified against current API documentation and contract. | Do not integrate consumer Poe accounts or resell access. Keep any API option blocked until current developer terms, account-owner eligibility, bot/model redistribution rights, end-user age rules, privacy, pricing, quotas and India availability are confirmed. |
+
+### Official sources for batch 11
+
+- Claude Code setup and authentication: https://docs.claude.com/en/docs/claude-code/setup
+- Claude Code costs and usage: https://docs.claude.com/en/docs/claude-code/costs
+- Task Observer: exact product identity not established; no authoritative source recorded.
+- OmniRoute official repository: https://github.com/omni-route/omniroute
+- Poe Terms of Service: https://poe.com/tos
+- Poe API documentation: https://creator.poe.com/docs
+
+**Batch result:** 4 more original-list entries have preliminary notes (42/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Claude Code remains a developer workflow; Task Observer is unidentified; OmniRoute is infrastructure requiring a provider-by-provider security/terms audit; Poe consumer access is not an API redistribution licence. No accounts, code execution, paid services, or integrations were enabled.
