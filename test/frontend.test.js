@@ -78,3 +78,27 @@ test("dashboard shortcuts navigate to existing workspace sections", () => {
   }
   assert.match(html, /class="shortcut-grid"/);
 });
+
+
+test("workspace UI exposes create, refresh and live status controls", () => {
+  for (const id of ["workspace-name", "create-workspace-button", "refresh-workspaces-button", "workspace-status", "workspace-list"]) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.match(html, /Create workspace/);
+  assert.match(html, /Your Workspaces/);
+});
+
+test("workspace data requests use the signed-in Supabase session and RLS REST API", () => {
+  assert.match(html, /config\.base\+'\/rest\/v1\/'+path/);
+  assert.match(html, /authorization:'Bearer '\+mstkSession\.access_token/);
+  assert.match(html, /owner_id:mstkSession\.user\.id/);
+  assert.match(html, /workspaces\?select=id,name,created_at&order=created_at\.desc/);
+  assert.match(html, /Workspace database tables are not available yet/);
+  assert.match(html, /database row-level security policies/);
+});
+
+test("workspace list renders names and identifiers as text, not HTML", () => {
+  assert.match(html, /name\.textContent=workspace\.name/);
+  assert.match(html, /id\.textContent='Workspace ID: '\+workspace\.id/);
+  assert.match(html, /card\.append\(name,id\)/);
+});
