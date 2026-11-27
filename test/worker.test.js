@@ -60,3 +60,22 @@ test("unconfigured origin is rejected", async () => {
 
   assert.equal(response.status, 403);
 });
+
+test("allowed CORS preflight returns the expected methods and headers", async () => {
+  const response = await worker.fetch(
+    new Request("https://api.example/api/health", {
+      method: "OPTIONS",
+      headers: {
+        Origin: "https://mstk.example",
+        "Access-Control-Request-Method": "GET",
+        "Access-Control-Request-Headers": "authorization,content-type",
+      },
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get("access-control-allow-origin"), "https://mstk.example");
+  assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
+  assert.equal(response.headers.get("access-control-allow-headers"), "Content-Type, Authorization");
+});
