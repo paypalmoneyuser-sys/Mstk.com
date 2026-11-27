@@ -10,6 +10,7 @@ const gitignore = await readFile(new URL("../.gitignore", import.meta.url), "utf
 const appScript = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const source = html + "\n" + appScript;
 const css = await readFile(new URL("../styles.css", import.meta.url), "utf8");
+const frontendSecurity = await readFile(new URL("../docs/FRONTEND-SECURITY.md", import.meta.url), "utf8");
 
 test("frontend application JavaScript is external and parseable", () => {
   assert.match(source, /<script src="\/app\.js"><\/script>/);
@@ -291,4 +292,17 @@ test("frontend CSS and application JavaScript are external assets", () => {
   assert.equal((html.match(/<script>(?!\s*src)/gi) || []).length, 0);
   assert.ok(css.includes("body{"));
   assert.ok(css.includes(".panel{"));
+});
+
+test("frontend remains compatible with a strict external-asset CSP", () => {
+  assert.equal((html.match(/<style\\b/gi) || []).length, 0);
+  assert.equal((html.match(/\\sstyle\\s*=/gi) || []).length, 0);
+  assert.equal((html.match(/\\son[a-z]+\\s*=/gi) || []).length, 0);
+  assert.equal((html.match(/javascript\\s*:/gi) || []).length, 0);
+  const scriptTags = [...html.matchAll(/<script\\b([^>]*)>/gi)];
+  assert.ok(scriptTags.length >= 2);
+  assert.ok(scriptTags.every((tag) => /\\bsrc\\s*=/.test(tag[1])));
+  assert.match(frontendSecurity, /script-src 'self'/);
+  assert.match(frontendSecurity, /style-src 'self'/);
+  assert.doesNotMatch(frontendSecurity, /unsafe-inline|unsafe-eval/);
 });
