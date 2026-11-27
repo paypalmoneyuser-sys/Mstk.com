@@ -35,6 +35,18 @@ test("authentication UI clearly reports that missing configuration is not live a
   assert.match(source, /Sign-in and sign-up are disabled until the public Supabase project settings are added/);
 });
 
+test("unconfigured public preview clearly disables account, workspace and AI controls", () => {
+  assert.match(html, /id="preview-notice"/);
+  assert.match(appScript, /function configurePreviewAvailability\(\)/);
+  assert.match(appScript, /Preview mode: account sign-in, saved workspaces, and AI connections are unavailable/);
+  for (const id of ["signin-button", "signup-button", "recover-button", "verify-button", "create-workspace-button", "refresh-workspaces-button", "create-project-button", "create-conversation-button", "send-prompt-button"]) {
+    assert.match(appScript, new RegExp("getElementById\\('" + id + "'\\)"));
+  }
+  assert.match(appScript, /if\(!configured\)\{/);
+  assert.match(appScript, /Preview only — authentication is not configured/);
+  assert.match(appScript, /Preview only — workspace database is not connected/);
+});
+
 test("MSTK protected API verification uses a separately configured API base URL", () => {
   assert.match(source, /MSTK_CONFIG\.apiBase/);
   assert.match(source, /new URL\('\/api\/me',config\.apiBase\)/);
