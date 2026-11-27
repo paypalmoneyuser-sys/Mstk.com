@@ -13,8 +13,9 @@ on conflict do nothing;
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000001', true);
 
-insert into public.workspaces (id, name, owner_id)
-values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'Workspace A', '10000000-0000-4000-8000-000000000001');
+insert into public.workspaces (id, name, owner_id) values
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'Workspace A', '10000000-0000-4000-8000-000000000001'),
+  ('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', 'Workspace B', '10000000-0000-4000-8000-000000000001');
 
 insert into public.projects (id, workspace_id, created_by, name)
 values ('aaaaaaaa-0000-4000-8000-aaaaaaaaaaaa', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
@@ -139,7 +140,7 @@ begin
     values ('bbbbbbbb-1111-4111-8111-bbbbbbbbbbbb',
             'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
             'aaaaaaaa-0000-4000-8000-aaaaaaaaaaaa',
-            '20000000-0000-4000-8000-000000000002', 'Cross-tenant');
+            '10000000-0000-4000-8000-000000000001', 'Cross-tenant');
   exception when others then
     rejected := true;
   end;
@@ -157,7 +158,7 @@ begin
     values ('bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb',
             'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa',
             'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
-            '20000000-0000-4000-8000-000000000002', 'user', 'cross-tenant');
+            '10000000-0000-4000-8000-000000000001', 'user', 'cross-tenant');
   exception when others then
     rejected := true;
   end;
