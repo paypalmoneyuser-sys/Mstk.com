@@ -32,7 +32,8 @@ test("browser configuration does not include privileged Supabase secrets", () =>
 
 test("authentication UI clearly reports that missing configuration is not live authentication", () => {
   assert.match(source, /Authentication is not configured yet/);
-  assert.match(source, /Sign-in and sign-up are disabled until the public Supabase project settings are added/);
+  assert.match(source, /Preview only — authentication is not configured/);
+  assert.match(source, /No account information is being submitted/);
 });
 
 test("unconfigured public preview clearly disables account, workspace and AI controls", () => {
