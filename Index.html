@@ -281,27 +281,35 @@ function authConfig(){
     return {base:url.toString().replace(/\/$/,''),key:MSTK_CONFIG.supabaseAnonKey,apiBase};
   }catch{return null;}
 }
+let mstkRefreshPromise=null;
 async function refreshSessionIfNeeded(){
-  if(!mstkSession?.access_token)return null;
-  const expiresAt=Number(mstkSession._mstkExpiresAt||0);
-  if(!expiresAt||expiresAt>Date.now()+60000)return mstkSession;
-  if(typeof mstkSession.refresh_token!=='string'||!mstkSession.refresh_token){
-    mstkSession=null;setSignedIn(false);resetWorkspacePanels();
-    throw new Error('Your sign-in session expired. Please sign in again.');
-  }
-  let refreshed;
-  try{refreshed=await authRequest('token?grant_type=refresh_token',{refresh_token:mstkSession.refresh_token});}
-  catch{
-    mstkSession=null;setSignedIn(false);resetWorkspacePanels();
-    throw new Error('Your sign-in session could not be refreshed. Please sign in again.');
-  }
-  if(!refreshed?.access_token){
-    mstkSession=null;setSignedIn(false);resetWorkspacePanels();
-    throw new Error('Your sign-in session could not be refreshed. Please sign in again.');
-  }
-  refreshed._mstkExpiresAt=Date.now()+Math.max(0,Number(refreshed.expires_in)||3600)*1000;
-  mstkSession=refreshed;
-  return mstkSession;
+  if(mstkRefreshPromise)return mstkRefreshPromise;
+  const sessionAtStart=mstkSession;
+  if(!sessionAtStart?.access_token)return null;
+  const expiresAt=Number(sessionAtStart._mstkExpiresAt||0);
+  if(!expiresAt||expiresAt>Date.now()+60000)return sessionAtStart;
+  mstkRefreshPromise=(async()=>{
+    if(typeof sessionAtStart.refresh_token!=='string'||!sessionAtStart.refresh_token){
+      if(mstkSession===sessionAtStart){mstkSession=null;setSignedIn(false);resetWorkspacePanels();}
+      throw new Error('Your sign-in session expired. Please sign in again.');
+    }
+    let refreshed;
+    try{refreshed=await authRequest('token?grant_type=refresh_token',{refresh_token:sessionAtStart.refresh_token});}
+    catch{
+      if(mstkSession===sessionAtStart){mstkSession=null;setSignedIn(false);resetWorkspacePanels();}
+      throw new Error('Your sign-in session could not be refreshed. Please sign in again.');
+    }
+    if(mstkSession!==sessionAtStart)return null;
+    if(!refreshed?.access_token){
+      mstkSession=null;setSignedIn(false);resetWorkspacePanels();
+      throw new Error('Your sign-in session could not be refreshed. Please sign in again.');
+    }
+    refreshed._mstkExpiresAt=Date.now()+Math.max(0,Number(refreshed.expires_in)||3600)*1000;
+    mstkSession=refreshed;
+    return mstkSession;
+  })();
+  try{return await mstkRefreshPromise;}
+  finally{mstkRefreshPromise=null;}
 }
 function trackSessionExpiry(session){
   if(session&&Number.isFinite(Number(session.expires_in))){
@@ -413,10 +421,11 @@ async function verifySession(){
   }
 }
 async function signOut(){
+  const sessionAtSignOut=mstkSession;
   const config=authConfig();
   try{
-    if(mstkSession?.access_token&&config){
-      await fetch(config.base+'/auth/v1/logout',{method:'POST',headers:{apikey:config.key,authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
+    if(sessionAtSignOut?.access_token&&config){
+      await fetch(config.base+'/auth/v1/logout',{method:'POST',headers:{apikey:config.key,authorization:'Bearer '+sessionAtSignOut.access_token},redirect:'error'});
     }
   }catch{}
   mstkSession=null;
