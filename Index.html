@@ -86,14 +86,14 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <header>MSTK<span>.COM</span></header>
 <div class="layout">
 <nav aria-label="Main navigation">
-<button onclick="show('home')">Home</button>
-<button onclick="show('account')">Account</button>
-<button onclick="show('workspace')">AI Workspace</button>
-<button onclick="show('image')">Image Studio</button>
-<button onclick="show('video')">Video Studio</button>
-<button onclick="show('audio')">Audio Studio</button>
-<button onclick="show('development')">Development</button>
-<button onclick="show('tools')">Tool Directory</button>
+<button data-mstk-action="show" data-mstk-value="home">Home</button>
+<button data-mstk-action="show" data-mstk-value="account">Account</button>
+<button data-mstk-action="show" data-mstk-value="workspace">AI Workspace</button>
+<button data-mstk-action="show" data-mstk-value="image">Image Studio</button>
+<button data-mstk-action="show" data-mstk-value="video">Video Studio</button>
+<button data-mstk-action="show" data-mstk-value="audio">Audio Studio</button>
+<button data-mstk-action="show" data-mstk-value="development">Development</button>
+<button data-mstk-action="show" data-mstk-value="tools">Tool Directory</button>
 </nav>
 <main>
 <section id="home" class="page active">
@@ -104,8 +104,8 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <h2>One space to explore, create and build.</h2>
 <p class="note">Start with the workspace or browse the original tool catalogue. Provider connections remain disabled until they pass review and testing.</p>
 <div class="quick-actions">
-<button class="action" onclick="show('workspace')">Open AI Workspace</button>
-<button class="action secondary" onclick="show('tools')">Explore 58 Tools</button>
+<button class="action" data-mstk-action="show" data-mstk-value="workspace">Open AI Workspace</button>
+<button class="action secondary" data-mstk-action="show" data-mstk-value="tools">Explore 58 Tools</button>
 </div>
 </div>
 <div class="dashboard-grid" aria-label="Project status">
@@ -117,12 +117,12 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <div class="panel">
 <h3>Workspace shortcuts</h3>
 <div class="shortcut-grid">
-<button class="shortcut" onclick="show('account')"><strong>Account</strong><span>Sign in and check account setup</span></button>
-<button class="shortcut" onclick="show('image')"><strong>Image Studio</strong><span>Image tools — integration pending</span></button>
-<button class="shortcut" onclick="show('video')"><strong>Video Studio</strong><span>Video tools — integration pending</span></button>
-<button class="shortcut" onclick="show('audio')"><strong>Audio Studio</strong><span>Audio tools — integration pending</span></button>
-<button class="shortcut" onclick="show('development')"><strong>Development</strong><span>Developer workspace preview</span></button>
-<button class="shortcut" onclick="show('tools')"><strong>Tool Directory</strong><span>Search and filter all 58 entries</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="account"><strong>Account</strong><span>Sign in and check account setup</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="image"><strong>Image Studio</strong><span>Image tools — integration pending</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="video"><strong>Video Studio</strong><span>Video tools — integration pending</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="audio"><strong>Audio Studio</strong><span>Audio tools — integration pending</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="development"><strong>Development</strong><span>Developer workspace preview</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="tools"><strong>Tool Directory</strong><span>Search and filter all 58 entries</span></button>
 </div>
 </div>
 <p class="note">Status is based on the current project audit register. Catalogue listing does not mean a provider is approved, connected, free or available in every country.</p>
@@ -138,22 +138,22 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <label for="account-password">Password</label>
 <input id="account-password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="At least 8 characters">
 <div>
-<button class="action" id="signin-button" onclick="authenticate('signin')">Sign in</button>
-<button class="action" id="signup-button" onclick="authenticate('signup')">Create account</button>
-<button class="action secondary" id="recover-button" onclick="recoverAccount()">Forgot password?</button>
-<button class="action hidden" id="signout-button" onclick="signOut()">Sign out</button>
+<button class="action" id="signin-button" data-mstk-action="signin">Sign in</button>
+<button class="action" id="signup-button" data-mstk-action="signup">Create account</button>
+<button class="action secondary" id="recover-button" data-mstk-action="recover">Forgot password?</button>
+<button class="action hidden" id="signout-button" data-mstk-action="signout">Sign out</button>
 </div>
 <div id="password-recovery-panel" class="hidden" aria-live="polite">
 <label for="recovery-password">New password</label>
 <input id="recovery-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Choose a new password">
-<button class="action" id="reset-password-button" onclick="completePasswordRecovery()">Set new password</button>
+<button class="action" id="reset-password-button" data-mstk-action="complete-recovery">Set new password</button>
 </div>
 <div id="account-status" class="status" role="status" aria-live="polite">Authentication is not configured yet.</div>
 <p class="note">For users under 18, use the service only where its age rules allow and with parent/guardian permission when required. Email confirmation may be required. This preview keeps the session in page memory only; refreshing the page signs you out.</p>
 </div>
 <div class="panel">
 <h3>Connection check</h3>
-<button class="action" id="verify-button" onclick="verifySession()" disabled>Verify API session</button>
+<button class="action" id="verify-button" data-mstk-action="verify-session" disabled>Verify API session</button>
 <p class="note">Checks the protected MSTK API endpoint after a successful sign-in. It does not access your private workspace data.</p>
 </div>
 </section>
@@ -165,8 +165,8 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <p class="note">Create and select a workspace. Data access is controlled by your Supabase database's row-level security policies.</p>
 <label for="workspace-name">New workspace name</label>
 <input id="workspace-name" type="text" maxlength="100" placeholder="e.g. My Projects">
-<button class="action" id="create-workspace-button" onclick="createWorkspace()">Create workspace</button>
-<button class="action secondary" id="refresh-workspaces-button" onclick="loadWorkspaces()">Refresh list</button>
+<button class="action" id="create-workspace-button" data-mstk-action="create-workspace">Create workspace</button>
+<button class="action secondary" id="refresh-workspaces-button" data-mstk-action="load-workspaces">Refresh list</button>
 <div id="workspace-status" class="status" role="status" aria-live="polite">Sign in to load your workspaces.</div>
 <div id="workspace-list" class="workspace-list" aria-live="polite"></div>
 </div>
@@ -174,14 +174,14 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <h3 id="selected-workspace-title">Select a workspace to manage projects</h3>
 <label for="project-name">New project name</label>
 <input id="project-name" type="text" maxlength="120" placeholder="e.g. Website redesign">
-<button class="action" id="create-project-button" onclick="createProject()" disabled>Create project</button>
+<button class="action" id="create-project-button" data-mstk-action="create-project" disabled>Create project</button>
 <div id="project-list" class="workspace-list"></div>
 </div>
 <div class="panel">
 <h3>Conversations</h3>
 <label for="conversation-title">New conversation title</label>
 <input id="conversation-title" type="text" maxlength="200" placeholder="e.g. Planning and ideas">
-<button class="action" id="create-conversation-button" onclick="createConversation()" disabled>New conversation</button>
+<button class="action" id="create-conversation-button" data-mstk-action="create-conversation" disabled>New conversation</button>
 <div id="conversation-list" class="workspace-list"></div>
 <div id="history-status" class="status" role="status" aria-live="polite">Select a workspace first.</div>
 <div id="message-history" class="message-history" aria-live="polite"></div>
@@ -197,14 +197,14 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <input id="compare-source-b" maxlength="80" placeholder="e.g. Provider 2">
 <label for="compare-answer-b">Response B</label>
 <textarea id="compare-answer-b" maxlength="12000" placeholder="Paste the second response"></textarea>
-<button class="action" id="start-comparison-button" onclick="startBlindComparison()">Start blind comparison</button>
+<button class="action" id="start-comparison-button" data-mstk-action="start-comparison">Start blind comparison</button>
 <div id="comparison-stage" hidden>
 <div class="comparison-grid">
-<article class="comparison-card"><h4>Response <span id="blind-label-one">A</span></h4><p id="blind-text-one"></p><button class="action secondary" onclick="chooseBlindResponse(0)">Choose this response</button></article>
-<article class="comparison-card"><h4>Response <span id="blind-label-two">B</span></h4><p id="blind-text-two"></p><button class="action secondary" onclick="chooseBlindResponse(1)">Choose this response</button></article>
+<article class="comparison-card"><h4>Response <span id="blind-label-one">A</span></h4><p id="blind-text-one"></p><button class="action secondary" data-mstk-action="choose-response" data-mstk-value="0">Choose this response</button></article>
+<article class="comparison-card"><h4>Response <span id="blind-label-two">B</span></h4><p id="blind-text-two"></p><button class="action secondary" data-mstk-action="choose-response" data-mstk-value="1">Choose this response</button></article>
 </div>
 <p id="comparison-status" class="status" role="status" aria-live="polite">Choose the response you prefer.</p>
-<button class="action secondary" id="reveal-comparison-button" onclick="revealBlindComparison()" disabled>Reveal sources</button>
+<button class="action secondary" id="reveal-comparison-button" data-mstk-action="reveal-comparison" disabled>Reveal sources</button>
 <div id="best-result" class="best-result" hidden aria-live="polite"><h4>Selected best response</h4><p id="best-result-source"></p><p id="best-result-text"></p></div>
 </div>
 </div>
@@ -212,7 +212,7 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <h3>Send a message</h3>
 <p class="note">Messages are saved to the selected conversation. AI replies are not saved yet; provider connections remain disabled.</p>
 <textarea id="prompt" maxlength="12000" placeholder="Write your prompt here..." disabled></textarea>
-<button class="action" id="send-prompt-button" onclick="sendPrompt()" disabled>Save message &amp; send</button>
+<button class="action" id="send-prompt-button" data-mstk-action="send-prompt" disabled>Save message &amp; send</button>
 <div id="response"></div>
 </div>
 </section>
@@ -754,6 +754,28 @@ function renderToolDirectory(){
   if(matches.length===0){const empty=document.createElement('p');empty.className='note';empty.textContent='No tools match this search.';list.append(empty);}
 }
 
+document.addEventListener('click',(event)=>{
+  const button=event.target.closest('button[data-mstk-action]');
+  if(!button||button.disabled)return;
+  const value=button.dataset.mstkValue;
+  switch(button.dataset.mstkAction){
+    case 'show': show(value); break;
+    case 'signin': authenticate('signin'); break;
+    case 'signup': authenticate('signup'); break;
+    case 'recover': recoverAccount(); break;
+    case 'signout': signOut(); break;
+    case 'complete-recovery': completePasswordRecovery(); break;
+    case 'verify-session': verifySession(); break;
+    case 'create-workspace': createWorkspace(); break;
+    case 'load-workspaces': loadWorkspaces(); break;
+    case 'create-project': createProject(); break;
+    case 'create-conversation': createConversation(); break;
+    case 'start-comparison': startBlindComparison(); break;
+    case 'choose-response': chooseBlindResponse(Number(value)); break;
+    case 'reveal-comparison': revealBlindComparison(); break;
+    case 'send-prompt': sendPrompt(); break;
+  }
+});
 document.getElementById('tool-search')?.addEventListener('input',renderToolDirectory);
 document.getElementById('tool-category')?.addEventListener('change',renderToolDirectory);
 renderToolDirectory();
