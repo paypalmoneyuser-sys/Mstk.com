@@ -18,17 +18,17 @@ Because account and service terms may impose age and contracting requirements, a
 
 Do not point Pages at the repository root as-is: it contains backend source and project files that should not be published as the static output.
 
-## Required repository preparation
+## Repository preparation
 
-Before connecting a Pages project, add and test a dedicated static build step that:
+A dedicated static build step is now implemented in `scripts/build-pages.js` and exposed as `npm run build:pages`. It:
 
 1. Creates a clean `dist/` output directory.
 2. Publishes only the frontend entry point (as lowercase `index.html`), `app.js`, `styles.css`, and generated public `mstk-config.js`.
 3. Does not copy `src/`, `supabase/`, `test/`, repository metadata, environment files, or documentation into the public output.
 4. Generates `mstk-config.js` from explicitly supplied public build variables, with safe empty/unconfigured defaults. Validate configured origins as HTTPS. Never read or serialize server-side secrets.
-5. Has automated tests that verify the output allowlist, lowercase entry point, asset references, and absence of secret-like configuration.
+5. Has automated tests that verify the output allowlist, lowercase entry point, asset references, HTTPS origin validation, and absence of secret-like configuration.
 
-Only after that build step is implemented and CI passes should the Pages build settings be:
+The build is code-complete, but it is not yet considered verified until CI passes on the latest commit. Once verified, the intended Pages build settings are:
 
 - Framework preset: None
 - Build command: `npm run build:pages`
@@ -52,7 +52,7 @@ These values are not credentials that grant privileged database access, but they
 Do not publish a production site until all are true:
 
 - Adult project owner has reviewed and accepted the current hosting terms and confirmed the Free plan.
-- The static build allowlist and generated config have passing automated tests.
+- The static build allowlist and generated config have passing automated tests on the exact release commit.
 - A final HTTPS hostname and exact allowed API origin are selected.
 - Supabase Auth, recovery redirects, asymmetric JWT verification, database migrations, and cross-account RLS are tested against a dedicated test project with separate test accounts.
 - The Worker is separately configured with exact `ALLOWED_ORIGIN`, `SUPABASE_URL`, and the rate-limit binding; no secret is placed in the frontend.
