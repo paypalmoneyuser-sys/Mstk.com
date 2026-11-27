@@ -2,7 +2,15 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import worker from "../src/index.js";
 
-const env = { ALLOWED_ORIGIN: "https://mstk.example" };
+const allowedLimiter = {
+  async limit() {
+    return { success: true };
+  },
+};
+const env = {
+  ALLOWED_ORIGIN: "https://mstk.example",
+  MSTK_RATE_LIMITER: allowedLimiter,
+};
 
 test("health endpoint returns service status and security headers", async () => {
   const response = await worker.fetch(
@@ -29,7 +37,7 @@ test("health endpoint rejects unsupported methods", async () => {
   assert.equal(response.status, 405);
 });
 
-test("unknown routes return 404", async () => {
+test("unknown API routes return 404 after passing the API guard", async () => {
   const response = await worker.fetch(
     new Request("https://api.example/api/private"),
     env,
@@ -78,4 +86,68 @@ test("allowed CORS preflight returns the expected methods and headers", async ()
   assert.equal(response.headers.get("access-control-allow-origin"), "https://mstk.example");
   assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
   assert.equal(response.headers.get("access-control-allow-headers"), "Content-Type, Authorization");
+});
+
+test("API routes fail closed when the rate limiter binding is missing", async () => {
+  const response = await worker.fetch(
+    new Request("https://api.example/api/private"),
+    { ALLOWED_ORIGIN: env.ALLOWED_ORIGIN },
+  );
+
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { error: "rate_limiter_unavailable" });
+});
+
+test("API routes return 429 when the rate limit is exceeded", async () => {
+  const limitedEnv = {
+    ...env,
+    MSTK_RATE_LIMITER: { async limit() { return { success: false }; } },
+  };
+  const response = await worker.fetch(
+    new Request("https://api.example/api/private", {
+      headers: { "CF-Connecting-IP": "203.0.113.10" },
+    }),
+    limitedEnv,
+  );
+
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get("retry-after"), "60");
+});
+
+test("API routes fail closed when the rate limiter throws", async () => {
+  const brokenEnv = {
+    ...env,
+    MSTK_RATE_LIMITER: { async limit() { throw new Error("unavailable"); } },
+  };
+  const response = await worker.fetch(
+    new Request("https://api.example/api/private"),
+    brokenEnv,
+  );
+
+  assert.equal(response.status, 503);
+});
+
+test("API rejects requests without a declared body size", async () => {
+  const response = await worker.fetch(
+    new Request("https://api.example/api/private", {
+      method: "POST",
+      body: "x",
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 411);
+});
+
+test("API rejects requests larger than one MiB", async () => {
+  const response = await worker.fetch(
+    new Request("https://api.example/api/private", {
+      method: "POST",
+      headers: { "Content-Length": "1048577" },
+      body: "x",
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 413);
 });
