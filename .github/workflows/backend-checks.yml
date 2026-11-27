@@ -23,6 +23,8 @@ jobs:
         run: npm test
       - name: Check JavaScript syntax
         run: npm run check
+      - name: Build static Cloudflare Pages preview
+        run: npm run build:pages
 
   postgres-migrations:
     runs-on: ubuntu-latest
