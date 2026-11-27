@@ -37,3 +37,29 @@ test("AI workspace sends prompts only through the authenticated MSTK API", () =>
   assert.match(html, /authorization:'Bearer '\+mstkSession\.access_token/);
   assert.match(html, /AI provider is not enabled yet/);
 });
+
+
+test("tool directory includes all 58 original catalogue entries with stable numbered identities", () => {
+  assert.match(html, /const MSTK_TOOLS = \[/);
+  assert.match(html, /\[58,"Kling AI"/);
+  assert.match(html, /\[1,"Anime\.js"/);
+  const rows = [...html.matchAll(/^\[(\d+),"([^"]+)","([^"]+)","([^"]+)","([^"]+)"\],?$/gm)];
+  assert.equal(rows.length, 58);
+  assert.deepEqual(rows.map((row) => Number(row[1])), Array.from({ length: 58 }, (_, index) => index + 1));
+});
+
+test("tool directory exposes search, category filters and honest connection count", () => {
+  for (const id of ["tool-search", "tool-category", "tool-count", "tool-list"]) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.match(html, /addEventListener\('input',renderToolDirectory\)/);
+  assert.match(html, /addEventListener\('change',renderToolDirectory\)/);
+  assert.match(html, /0 connected/);
+});
+
+test("tool directory renders catalogue data as text rather than injecting HTML", () => {
+  assert.match(html, /title\.textContent='\#'/);
+  assert.match(html, /detail\.textContent=tool\[4\]/);
+  assert.match(html, /card\.append\(title,tags,detail\)/);
+  assert.match(html, /No age-check bypass is offered/);
+});
