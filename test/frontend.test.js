@@ -77,7 +77,7 @@ test("home dashboard reports current project status without claiming integration
 
 test("dashboard shortcuts navigate to existing workspace sections", () => {
   for (const id of ["workspace", "tools", "account", "image", "video", "audio", "development"]) {
-    assert.match(html, new RegExp("show\\('" + id + "'\\)"));
+    assert.match(html, new RegExp('data-mstk-action="show" data-mstk-value="' + id + '"'));
   }
   assert.match(html, /class="shortcut-grid"/);
 });
