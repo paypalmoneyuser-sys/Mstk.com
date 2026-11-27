@@ -140,7 +140,13 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <div>
 <button class="action" id="signin-button" onclick="authenticate('signin')">Sign in</button>
 <button class="action" id="signup-button" onclick="authenticate('signup')">Create account</button>
+<button class="action secondary" id="recover-button" onclick="recoverAccount()">Forgot password?</button>
 <button class="action hidden" id="signout-button" onclick="signOut()">Sign out</button>
+</div>
+<div id="password-recovery-panel" class="hidden" aria-live="polite">
+<label for="recovery-password">New password</label>
+<input id="recovery-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Choose a new password">
+<button class="action" id="reset-password-button" onclick="completePasswordRecovery()">Set new password</button>
 </div>
 <div id="account-status" class="status" role="status" aria-live="polite">Authentication is not configured yet.</div>
 <p class="note">For users under 18, use the service only where its age rules allow and with parent/guardian permission when required. Email confirmation may be required. This preview keeps the session in page memory only; refreshing the page signs you out.</p>
@@ -344,6 +350,52 @@ async function authenticate(mode){
     setStatus(error.message||'Unable to complete authentication.','error');
   }finally{
     buttons.forEach(id=>document.getElementById(id).disabled=false);
+  }
+}
+async function recoverAccount(){
+  const email=document.getElementById('account-email').value.trim();
+  if(!email){setStatus('Enter your account email first.','error');return;}
+  const button=document.getElementById('recover-button');button.disabled=true;
+  try{
+    const redirectTo=location.origin+location.pathname;
+    await authRequest('recover?redirect_to='+encodeURIComponent(redirectTo),{email});
+    setStatus('If an account exists for that address, a password-recovery email will be sent. Check your inbox and spam folder.','good');
+  }catch(error){
+    setStatus(error.message||'Unable to request password recovery.','error');
+  }finally{button.disabled=false;}
+}
+async function completePasswordRecovery(){
+  const password=document.getElementById('recovery-password').value;
+  if(password.length<8||password.length>128){setStatus('New password must be between 8 and 128 characters.','error');return;}
+  if(!mstkSession?.access_token){setStatus('The recovery link is missing or expired. Request a new password-recovery email.','error');return;}
+  const button=document.getElementById('reset-password-button');button.disabled=true;
+  try{
+    const config=authConfig();
+    const response=await fetch(config.base+'/auth/v1/user',{method:'PUT',headers:{apikey:config.key,authorization:'Bearer '+mstkSession.access_token,'content-type':'application/json'},body:JSON.stringify({password}),redirect:'error'});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(typeof data.msg==='string'?data.msg:typeof data.message==='string'?data.message:'Password could not be updated.');
+    mstkSession=null;setSignedIn(false);resetWorkspacePanels();
+    document.getElementById('password-recovery-panel').classList.add('hidden');
+    document.getElementById('recovery-password').value='';
+    setStatus('Password updated. Sign in with your new password.','good');
+  }catch(error){setStatus(error.message||'Unable to update password.','error');}
+  finally{button.disabled=false;}
+}
+function handlePasswordRecoveryCallback(){
+  const params=new URLSearchParams(location.hash.replace(/^#/,''));
+  const accessToken=params.get('access_token');
+  const refreshToken=params.get('refresh_token');
+  const type=params.get('type');
+  if(type==='recovery'){
+    history.replaceState(null,'',location.pathname+location.search);
+    if(accessToken&&refreshToken){
+      mstkSession=trackSessionExpiry({access_token:accessToken,refresh_token:refreshToken,expires_in:Number(params.get('expires_in'))||3600,token_type:params.get('token_type')||'bearer'});
+      setSignedIn(true);
+      document.getElementById('password-recovery-panel').classList.remove('hidden');
+      setStatus('Recovery link verified. Choose a new password below.','good');
+    }else{
+      setStatus('The recovery link is incomplete or expired. Request a new one.','error');
+    }
   }
 }
 async function verifySession(){
@@ -695,6 +747,7 @@ function renderToolDirectory(){
 document.getElementById('tool-search')?.addEventListener('input',renderToolDirectory);
 document.getElementById('tool-category')?.addEventListener('change',renderToolDirectory);
 renderToolDirectory();
+handlePasswordRecoveryCallback();
 if(!authConfig())setStatus('Authentication is not configured yet. Sign-in and sign-up are disabled until the public Supabase project settings are added.','error');
 </script>
 </body>
