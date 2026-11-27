@@ -118,3 +118,22 @@ test("protected API rejects an invalid Supabase URL", async () => {
   assert.equal(response.status, 503);
   assert.deepEqual(await response.json(), { error: "authentication_unavailable" });
 });
+
+test("AI chat endpoint requires an authenticated session", async () => {
+  const response = await worker.fetch(new Request("https://api.example/api/ai/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Content-Length": "17" },
+    body: JSON.stringify({ prompt: "Hello" }),
+  }), { ...env, SUPABASE_URL: "https://project.supabase.co" });
+  assert.equal(response.status, 401);
+  assert.deepEqual(await response.json(), { error: "authentication_required" });
+});
+
+test("AI chat endpoint enforces the shared request-size guard", async () => {
+  const response = await worker.fetch(new Request("https://api.example/api/ai/chat", {
+    method: "POST",
+    headers: { "Content-Length": "1048577" },
+    body: "x",
+  }), env);
+  assert.equal(response.status, 413);
+});
