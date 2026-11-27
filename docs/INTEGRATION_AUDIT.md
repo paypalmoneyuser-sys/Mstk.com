@@ -170,3 +170,35 @@ MSTK may provide per-tool availability controls rather than requiring every user
 Higgsfield's API terms reviewed for this audit require both developers and end users to be at least 18 (or the higher applicable age of majority). An age-check option for visitors therefore does not make this API eligible for the current MSTK developer setup. Keep MAGI-2 excluded and disabled; reconsider only if the developer/account owner and every intended user meet the provider's requirements and the provider's terms still permit MSTK's use. No verification flow or integration should be built to bypass this restriction.
 
 **Status:** Product-design policy documented only. No age-verification vendor, identity collection, restricted integration, or provider connection has been enabled.
+
+
+## Official-source research batch 4 — 2026-11-27
+
+This batch reviews original-list entries #12–#15. These are preliminary findings from official provider sources; no account was created, API key obtained, paid plan activated, or live integration tested.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 12 | Claude | Anthropic Consumer Terms (effective 2025-10-08) require an individual user to be at least 18 or the higher applicable local age. The Claude API is a separate product governed by Commercial Terms, not the consumer terms. Official API docs confirm a Console account and API key are required. The exact API account-owner age/eligibility requirements were not conclusively established in this pass. | Consumer Free plan has limited usage windows; paid plans are subscription-based. API is separately token-billed with model-specific input/output and optional caching/batch charges. | Do not enable consumer Claude for under-18 MSTK users. Treat Claude API as pending: obtain the current Commercial Terms and confirm eligible adult/legal account ownership, supported region, privacy/data processing, and cost controls before considering integration. The separate original-list #17 Claude entry is a duplicate, not another provider. |
+| 13 | ChatGPT / OpenAI API | OpenAI consumer Terms effective 2026-01-01 set minimum age at 13 or local digital-consent age; users under 18 need parent/guardian permission. OpenAI's API under-18 guidance explicitly permits applications serving minors only with additional age-appropriate safeguards, disclosures, filters, monitoring/reporting, privacy-law compliance and, where appropriate, age assurance. Consumer ChatGPT access and API access are distinct products. | Consumer plan limits vary by plan. API is separately pay-as-you-go, with model/token and tool-specific pricing; a ChatGPT subscription does not establish free API usage. | Potential future candidate only after an eligible adult/legal project owner and required approvals are in place. Before any teen-facing API use, complete child-safety, privacy, moderation, abuse-reporting, retention and cost-limit reviews. No API key or paid usage enabled. |
+| 14 | Gemini | Gemini consumer app and Gemini API have different eligibility rules. Google's consumer Gemini help page says most countries allow Gemini Apps from age 13 (or local applicable age), with some feature restrictions for under-18s. The Gemini API Additional Terms effective 2026-03-23 state API users must be 18+ and prohibit use in an API Client directed to or likely to be accessed by under-18s. | Gemini API offers limited free-tier model access and paid token/tool usage; limits and prices are model- and feature-specific and can change. | Do not treat consumer Gemini eligibility as API permission. Because MSTK is intended for a public audience that may include under-18 users, keep Gemini API blocked pending written provider clarification or a materially different product eligibility design that the provider confirms is allowed. No age-gate workaround. |
+| 15 | Seedance | The official ByteDance Seed page documents Seedance API access through BytePlus for non-US users and partner access for US users. Official BytePlus ModelArk docs describe video-generation API access, model activation, API-key use and token-based billing. The public official sources reviewed did not establish a definitive minimum age for the API developer or all end users; do not infer it from unrelated third-party sites using the Seedance name. | Official ByteDance API pricing is token-based and depends on model/resolution/input. BytePlus activation documentation lists a USD 30 minimum threshold for credits, savings plan or resource pack routes; therefore this is not a zero-cost integration path. | Keep disabled. Before any future review, obtain the exact BytePlus/ByteDance contract and written age eligibility, verify India account/billing availability, calculate full generation costs and confirm data/content terms. No account activation or purchase. |
+
+### Official sources for batch 4
+
+- Anthropic Consumer Terms (effective 2025-10-08): https://assets.claude.com/ed7f1f94a2ecb7657fb4be5af6f66c66b38fb148.pdf
+- Anthropic Legal Center and Commercial Terms index: https://www.anthropic.com/legal
+- Claude API overview: https://platform.claude.com/docs/en/api/overview
+- Claude pricing: https://claude.com/pricing
+- OpenAI Terms of Use (effective 2026-01-01): https://openai.com/policies/terms-of-use/
+- OpenAI Help Center age requirements: https://help.openai.com/en/articles/8313401-is-chatgpt-safe-for-all-ages
+- OpenAI API under-18 guidance: https://developers.openai.com/api/docs/guides/safety-checks/under-18-api-guidance
+- OpenAI API pricing: https://developers.openai.com/api/docs/pricing
+- Gemini Apps age and usage information: https://support.google.com/gemini/answer/16275805?hl=en-IN
+- Gemini API Additional Terms (official Google AI Developers terms page): https://ai.google.dev/gemini-api/terms
+- Gemini API pricing: https://ai.google.dev/gemini-api/docs/pricing
+- ByteDance Seedance Enterprise: https://seed.bytedance.com/en/seedance-enterprise
+- ByteDance Seedance API pricing: https://seed.bytedance.com/en/seedance-enterprise/api
+- BytePlus Seedance model activation and billing: https://console.byteplus.com/ark/region%3Aap-southeast-1/docs/seedance-model-activation-usage-and-refund
+- BytePlus video generation API: https://docs.byteplus.com/en/docs/ModelArk/create-video-generation-task-api
+
+**Batch result:** 4 more entries have official-source notes (15/58 entries with some preliminary research across the batches). This does not mean they are fully audited. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Claude consumer and Gemini API have explicit age-based restrictions relevant to MSTK; OpenAI API has published safeguards for applications serving minors; Seedance API eligibility remains unresolved and its documented activation route requires paid funding. No paid services or integrations were enabled.
