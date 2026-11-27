@@ -5,3 +5,6 @@ node_modules/
 .env.*
 !.env.example
 coverage/
+
+# Local browser configuration; contains public project identifiers
+mstk-config.js
