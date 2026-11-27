@@ -35,7 +35,7 @@ The AI adapter remains disabled unless `MSTK_AI_ENABLED=true`. To configure one 
 ## Current limitations
 
 - AI provider connection is a generic adapter only; no provider has been selected, configured, or live-tested.
-- Account UI supports basic email/password sign-up, sign-in, sign-out, and optional protected API session verification, but live Supabase authentication is not production-verified; email recovery, durable refresh-token session handling, and complete session lifecycle remain outstanding.
+- Account UI supports email/password sign-up, sign-in, sign-out, password-recovery email requests, and password reset from a Supabase recovery link. Access/refresh tokens remain in page memory only; refreshing the page signs the user out. Refresh-token rotation is used when an in-memory access token is close to expiry. Live Supabase authentication, recovery redirects, email delivery, and session refresh have not been production-verified.
 - Workspace, project, conversation, and user-message UI operations are implemented against the existing Supabase schema and rely on its RLS policies, but have not been tested against a configured live Supabase project.
 - The blind comparison tool is a manual paste-in preview; it does not invoke multiple AI providers, persist comparison results, or automatically judge answers.
 - JWT verification has not been tested against a live Supabase project or real tokens.
