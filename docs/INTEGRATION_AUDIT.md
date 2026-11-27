@@ -450,3 +450,27 @@ Updated official evidence:
 - ElevenAPI Terms (updated 2026-10-09): https://elevenlabs.io/elevenapi-terms
 
 The previous batch-13 row's statement that the terms require only 13+ with guardian consent is incorrect for the current non-EEA terms and is superseded by this correction. The overall 50/58 preliminary-research count is unchanged.
+
+## Official-source research batch 14 — 2026-11-28
+
+This batch reviews original-list entries #54–#57. Findings are preliminary official-source notes, not full audits or live integration tests. No accounts, credentials, subscriptions, payments, or integrations were created.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 54 | Replit | Official Replit documentation describes hosted development, deployment and AI-assisted coding. Replit's Terms set minimum age and account eligibility requirements; the current terms should be checked for the user's region and product. The platform's developer APIs and integrations are not a blanket licence to expose Replit account entitlements or hosted development environments through another multi-tenant product. | Free Starter access is limited; paid Core/Teams plans and usage-based AI/deployment charges are separate. Current quotas and India billing vary by plan and can change. | Keep as an optional developer workflow, not a public MSTK runtime integration. Do not proxy personal subscriptions. Any future integration requires eligible account ownership, current API/embedding permission, workspace isolation, secrets and code execution sandboxing, abuse controls, cost caps and privacy review. |
+| 55 | Saner.AI | The exact intended Saner.AI product and authoritative developer API were not conclusively identified from the original list name. Consumer-facing AI knowledge-management features do not prove a public API or permission to embed/resell the service. | No verified official developer price or quota established. | Block pending exact official URL, publisher and supported API documentation. Do not connect consumer accounts or automate the web UI. |
+| 56 | Jasper | Official Jasper Terms and developer materials describe a commercial AI marketing platform. API access is a separately provisioned product; account eligibility, permitted use, customer data processing and commercial terms apply. Consumer subscription features do not automatically confer API rights or permission to resell Jasper's service. | Paid subscription and/or separately contracted API access; no universal free production API quota established in this review. Exact current API pricing, quotas and India billing need direct confirmation. | Do not enable for the current teen-facing project until developer/account eligibility, contract authority, API access, redistribution rights, data retention, privacy, moderation, pricing and cost caps are confirmed. Treat as a possible future business-content connector only after legal review. |
+| 57 | Tripo AI | Official Tripo materials describe 3D model generation and developer API access. API use is credit-metered and governed by separate platform/API terms. Generated 3D assets may have different commercial-use and ownership conditions by plan and use case; consumer credits do not establish public resale rights. | Credits and plan quotas apply; exact current API credit consumption, commercial rights, and India billing must be verified against the chosen API plan before use. | Keep disabled pending developer eligibility, API terms, commercial-output rights, end-user age, moderation, file scanning, storage/retention, pricing and quota verification. 3D files must be processed in a sandbox with upload size/type limits before any public feature. |
+
+### Official sources for batch 14
+
+- Replit Terms of Service: https://replit.com/terms-of-service
+- Replit pricing: https://replit.com/pricing
+- Replit documentation: https://docs.replit.com/
+- Saner.AI: exact authoritative API source not established.
+- Jasper Terms of Service: https://www.jasper.ai/terms
+- Jasper developer/API documentation: https://developers.jasper.ai/
+- Tripo AI API documentation: https://platform.tripo3d.ai/docs
+- Tripo AI official website: https://www.tripo3d.ai/
+
+**Batch result:** 4 more original-list entries have preliminary notes (54/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Replit remains a developer workflow only; Saner.AI is unidentified at API level; Jasper requires separate commercial API and contract review; Tripo requires API-credit, output-rights and sandbox review. No accounts, paid services, credits, or integrations were enabled.
