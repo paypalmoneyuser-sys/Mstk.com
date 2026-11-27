@@ -70,6 +70,11 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 .message-item{padding:12px;border-radius:10px;background:#242538;border:1px solid #37394e}
 .message-item strong{display:block;color:#c4b5fd;font-size:12px;margin-bottom:5px}
 .message-item p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:14px}
+
+.comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:14px 0}
+.comparison-card{background:#242538;border:1px solid #37394e;border-radius:12px;padding:14px;min-width:0}
+.comparison-card h4{color:#e5ddff;margin:0 0 10px}
+.comparison-card p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:360px;overflow:auto;line-height:1.5;font-size:14px}
 </style>
 </head>
 <body>
@@ -169,6 +174,27 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <div id="conversation-list" class="workspace-list"></div>
 <div id="history-status" class="status" role="status" aria-live="polite">Select a workspace first.</div>
 <div id="message-history" class="message-history" aria-live="polite"></div>
+</div>
+<div class="panel" id="blind-comparison">
+<h3>Blind Response Comparison</h3>
+<p class="note">Compare two responses without seeing their source labels first. This manual preview does not call AI providers or incur API charges.</p>
+<label for="compare-source-a">Response A source label (hidden until reveal)</label>
+<input id="compare-source-a" maxlength="80" placeholder="e.g. Provider 1">
+<label for="compare-answer-a">Response A</label>
+<textarea id="compare-answer-a" maxlength="12000" placeholder="Paste the first response"></textarea>
+<label for="compare-source-b">Response B source label (hidden until reveal)</label>
+<input id="compare-source-b" maxlength="80" placeholder="e.g. Provider 2">
+<label for="compare-answer-b">Response B</label>
+<textarea id="compare-answer-b" maxlength="12000" placeholder="Paste the second response"></textarea>
+<button class="action" id="start-comparison-button" onclick="startBlindComparison()">Start blind comparison</button>
+<div id="comparison-stage" hidden>
+<div class="comparison-grid">
+<article class="comparison-card"><h4>Response <span id="blind-label-one">A</span></h4><p id="blind-text-one"></p><button class="action secondary" onclick="chooseBlindResponse(0)">Choose this response</button></article>
+<article class="comparison-card"><h4>Response <span id="blind-label-two">B</span></h4><p id="blind-text-two"></p><button class="action secondary" onclick="chooseBlindResponse(1)">Choose this response</button></article>
+</div>
+<p id="comparison-status" class="status" role="status" aria-live="polite">Choose the response you prefer.</p>
+<button class="action secondary" id="reveal-comparison-button" onclick="revealBlindComparison()" disabled>Reveal sources</button>
+</div>
 </div>
 <div class="panel">
 <h3>Send a message</h3>
@@ -314,6 +340,40 @@ async function signOut(){
   setStatus('Signed out of this page session.','good');
 }
 
+
+let blindComparison = null;
+function startBlindComparison(){
+  const sourceA=document.getElementById('compare-source-a').value.trim()||'Source A';
+  const sourceB=document.getElementById('compare-source-b').value.trim()||'Source B';
+  const answerA=document.getElementById('compare-answer-a').value.trim();
+  const answerB=document.getElementById('compare-answer-b').value.trim();
+  const status=document.getElementById('comparison-status');
+  if(!answerA||!answerB){status.textContent='Paste both responses before starting.';status.className='status error';return;}
+  if(sourceA===sourceB){status.textContent='Use two different source labels.';status.className='status error';return;}
+  const swapped=Math.random()<0.5;
+  blindComparison={items:swapped?[{source:sourceB,text:answerB},{source:sourceA,text:answerA}]:[{source:sourceA,text:answerA},{source:sourceB,text:answerB}],choice:null,revealed:false};
+  document.getElementById('blind-label-one').textContent='A';
+  document.getElementById('blind-label-two').textContent='B';
+  document.getElementById('blind-text-one').textContent=blindComparison.items[0].text;
+  document.getElementById('blind-text-two').textContent=blindComparison.items[1].text;
+  document.getElementById('comparison-stage').hidden=false;
+  document.getElementById('reveal-comparison-button').disabled=true;
+  status.textContent='Sources are hidden. Choose the response you prefer.';
+  status.className='status';
+}
+function chooseBlindResponse(index){
+  if(!blindComparison||blindComparison.revealed||![0,1].includes(index))return;
+  blindComparison.choice=index;
+  document.getElementById('comparison-status').textContent='You selected response '+(index===0?'A':'B')+'. You can now reveal the sources.';
+  document.getElementById('reveal-comparison-button').disabled=false;
+}
+function revealBlindComparison(){
+  if(!blindComparison||blindComparison.choice===null)return;
+  blindComparison.revealed=true;
+  const selected=blindComparison.items[blindComparison.choice];
+  document.getElementById('comparison-status').textContent='Your choice: '+(blindComparison.choice===0?'A':'B')+' · Source: '+selected.source+'. A: '+blindComparison.items[0].source+' · B: '+blindComparison.items[1].source+'.';
+  document.getElementById('reveal-comparison-button').disabled=true;
+}
 function setWorkspaceStatus(message,kind=''){
   const el=document.getElementById('workspace-status');
   if(!el)return;
