@@ -389,3 +389,27 @@ This batch reviews original-list entries #42–#45. Findings are preliminary off
 - Poe API documentation: https://creator.poe.com/docs
 
 **Batch result:** 4 more original-list entries have preliminary notes (42/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Claude Code remains a developer workflow; Task Observer is unidentified; OmniRoute is infrastructure requiring a provider-by-provider security/terms audit; Poe consumer access is not an API redistribution licence. No accounts, code execution, paid services, or integrations were enabled.
+
+## Official-source research batch 12 — 2026-11-28
+
+This batch reviews original-list entries #46–#49. Findings are preliminary official-source notes, not full audits or live integration tests. No accounts, credentials, subscriptions, payments, or integrations were created.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 46 | Ollama | Official Ollama documentation describes a local model runtime and a local HTTP API (default localhost endpoint), plus optional cloud model features. The local API is not an externally hosted inference service and should not be exposed publicly without an authenticated gateway and network isolation. Model licences vary by model; Ollama's software licence does not automatically grant rights to every model pulled through it. | Local software can be run without a per-token hosted API bill, but hardware, electricity, storage and operations cost money. Cloud features and third-party model licences/pricing are separate. No universal free quota or model licence exists. | Potential local-development option only, not a hosted public integration yet. Require model-by-model licence and age review, resource limits, sandboxing, no public unauthenticated port, tenant isolation, model provenance, content safeguards and hardware capacity tests. |
+| 47 | Kixi.ai | Exact identity and official publisher for the original-list entry remain unverified. No authoritative API documentation, terms, licence or support channel was established in this pass. | Unknown; no verified official pricing or quota. | Block pending exact official product URL or publisher identity. Do not connect via unofficial endpoints or share account credentials. |
+| 48 | Flashloop | The name is ambiguous and this pass did not establish an authoritative official product/API matching the original-list item. | Unknown; no verified official pricing or quota. | Block pending exact official product URL, publisher and use-case confirmation. No account creation, automation or integration until identity, terms, age rules, licence, privacy and API support are verified. |
+| 49 | Artflow.ai | Official Artflow material describes an AI character/video creation platform and publishes consumer-facing terms. The reviewed public sources did not establish a supported general-purpose developer API that authorizes a third-party workspace to create or resell generated content. Consumer product access and any creator subscription do not imply API/redistribution rights. | Consumer plan/credit details are separate from API pricing; no public, authoritative API price/quota schedule was established in this pass. | Keep as a manual user workflow only unless Artflow publishes an authorized developer API and explicit commercial/redistribution terms. Review age eligibility, generated-content rights, privacy/retention, moderation, India availability and costs before reconsideration. |
+
+### Official sources for batch 12
+
+- Ollama official documentation: https://docs.ollama.com/
+- Ollama API documentation: https://docs.ollama.com/api
+- Ollama FAQ / local API security notes: https://docs.ollama.com/faq
+- Ollama GitHub repository and licence: https://github.com/ollama/ollama
+- Kixi.ai: exact official identity/source not established.
+- Flashloop: exact official identity/source not established.
+- Artflow official site: https://artflow.ai/
+- Artflow terms: https://artflow.ai/terms
+
+**Batch result:** 4 more original-list entries have preliminary notes (46/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Ollama is a possible local-runtime candidate subject to model-by-model review and safe isolation; Kixi.ai and Flashloop remain unidentified; Artflow remains a manual workflow until authorized API and commercial rights are proven. No accounts, code execution, paid services, or integrations were enabled.
