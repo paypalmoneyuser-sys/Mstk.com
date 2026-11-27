@@ -1,0 +1,21 @@
+-- MSTK RLS verification checklist (manual/integration test plan).
+-- Run only after applying migrations 0001 and 0002 to a disposable Supabase project.
+-- Create two authenticated users (A and B) and separate workspaces (WA and WB).
+-- Execute each statement using that user's JWT/session, not the SQL editor owner role.
+
+-- Expected outcomes:
+-- 1. User A can SELECT their own profile; User B cannot SELECT or UPDATE A's profile.
+-- 2. User A can SELECT WA; User B cannot SELECT WA unless explicitly added to workspace_members.
+-- 3. A workspace owner can add B as role='member'; B can then read WA.
+-- 4. A regular member cannot insert/update/delete workspace_members.
+-- 5. A regular member cannot update or delete another user's project.
+-- 6. A regular member can create their own project and edit that project.
+-- 7. A member cannot read or insert messages for a conversation in a workspace they do not belong to.
+-- 8. A member cannot insert a message whose workspace_id differs from its conversation's workspace_id.
+-- 9. A client cannot insert assistant/system messages under the initial authenticated grants/policies.
+-- 10. Anon role cannot read any application table.
+-- 11. Owner/admin can manage workspace projects and conversations.
+-- 12. updated_at changes after updates to profiles, workspaces, projects and conversations.
+
+-- IMPORTANT: Tests are NOT automated by this checklist and have NOT been executed.
+-- Use real separate sessions/JWTs or Supabase's supported RLS test harness.
