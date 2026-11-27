@@ -202,3 +202,33 @@ This batch reviews original-list entries #12–#15. These are preliminary findin
 - BytePlus video generation API: https://docs.byteplus.com/en/docs/ModelArk/create-video-generation-task-api
 
 **Batch result:** 4 more entries have official-source notes (15/58 entries with some preliminary research across the batches). This does not mean they are fully audited. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Claude consumer and Gemini API have explicit age-based restrictions relevant to MSTK; OpenAI API has published safeguards for applications serving minors; Seedance API eligibility remains unresolved and its documented activation route requires paid funding. No paid services or integrations were enabled.
+
+
+## Official-source research batch 5 — 2026-11-27
+
+This batch covers original-list entries #18–#21. #21 Google Slides was already researched in batch 2; this batch revalidates and expands its OAuth/privacy/quota findings rather than counting it as a new unique app. No accounts, keys, paid plans or live integrations were created.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 18 | Grok / xAI | xAI consumer terms allow users aged 13+ or the local minimum age, with parent/legal-guardian permission for ages 13–17. This consumer rule does not apply to API access: xAI Enterprise FAQ says API users must be 18+. The same FAQ says the API cannot be used to run a competing service or a service similar to an xAI service. | API is paid by token/media usage; model-specific prices and rate limits vary. Rate-limit tiers are linked to cumulative spend, beginning at $0 for Tier 0; higher tiers require paid spend. | Do not enable xAI API for MSTK: adult-only API access and the competing-service restriction are material blockers for an AI workspace offering model access. Consumer Grok access is separate and must not be represented as an MSTK API integration. |
+| 19 | Meta Muse Spark | Meta Model API is available as a developer API, but its Terms (last updated 2026-10-09) require both developers and end users to be at least 18 and prohibit creating Integrated Products targeted at under-18s. The geographic-use policy and model designation apply in addition to the Terms. | Pay-as-you-go; model-specific token pricing and rate limits. Standard and Contributor modes have different data-use implications; Contributor mode may use content to train future Meta models. | Exclude from current teen-facing MSTK. An age-verification gate for individual visitors cannot make an under-18-targeted product permissible under these terms. Reconsider only if provider terms and product audience change and are confirmed in writing. |
+| 20 | Claude Design | Anthropic describes Claude Design as a visual design/prototyping product. It is a Claude consumer product/research-preview feature, not a separately documented general-purpose developer API in the official product announcement reviewed. Anthropic Consumer Terms require users to be at least 18 (or higher local minimum age). | Availability depends on eligible Claude plans; the feature announcement lists Pro, Max, Team and Enterprise during its initial research-preview rollout. No separate Claude Design API pricing or quota was identified. | Do not expose Claude Design as a direct MSTK integration. Treat it as a separate third-party product with the same consumer age restriction; no API integration is evidenced. |
+| 21 | Google Slides | Revalidated official Slides API documentation. OAuth scopes include sensitive presentation-wide access and a recommended non-sensitive `drive.file` scope for files created/opened by the app. Public apps requesting sensitive scopes require verification; restricted Drive scopes can require restricted-scope verification and security assessment. Google Workspace user-data policy requires clear disclosure, affirmative consent, limited use, secure handling and user deletion controls. | Slides API is available at no additional cost. Published quotas include 3,000 read requests/minute/project, 600 read requests/minute/user/project, 300 expensive read requests/minute/project, 60 expensive reads/minute/user/project, 600 write requests/minute/project and 60 writes/minute/user/project. Quotas can change and 429 handling is required. | Remains a promising, relatively low-cost productivity integration candidate. Prefer least-privilege `drive.file` scope where the use case permits; complete OAuth verification, privacy policy, consent, data deletion, security and end-to-end testing before enabling. |
+
+### Official sources for batch 5
+
+- xAI Consumer Terms: https://x.ai/legal/x-subscription-terms-of-service
+- xAI Enterprise FAQ (API age and competing-service restrictions): https://x.ai/legal/faq-enterprise
+- xAI API pricing: https://docs.x.ai/developers/pricing
+- xAI API rate limits: https://docs.x.ai/developers/rate-limits
+- Meta Model API Terms (last updated 2026-10-09): https://dev.meta.ai/legal/terms-of-service
+- Meta Model API geographic-use policy: https://dev.meta.ai/legal/geographic-use-policy
+- Meta Muse Spark API docs and pricing: https://dev.meta.ai/docs/muse-spark
+- Anthropic Claude Design announcement: https://www.anthropic.com/news/claude-design-anthropic-labs
+- Anthropic Consumer Terms (effective 2025-10-08): https://assets.claude.com/ed7f1f94a2ecb7657fb4be5af6f66c66b38fb148.pdf
+- Google Slides API scopes: https://developers.google.com/workspace/slides/api/scopes
+- Google Slides API limits and pricing: https://developers.google.com/workspace/slides/api/limits
+- Google Workspace user data and developer policy: https://developers.google.com/workspace/workspace-api-user-data-developer-policy
+- Google API Services User Data Policy: https://developers.google.com/terms/api-services-user-data-policy
+
+**Batch result:** 3 new unique entries (#18–#20) now have official-source notes; #21 was revalidated. Total unique original-list entries with some preliminary official-source research: 18/58. This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from the list: 0. Grok API and Meta Model API are blocked by adult-only API terms; Claude Design is a consumer product with an 18+ age requirement and no separate integration API established. Google Slides remains a candidate pending OAuth and privacy work. No paid services or integrations were enabled.
