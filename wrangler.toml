@@ -1,0 +1,6 @@
+name = "mstk-api"
+main = "src/index.js"
+compatibility_date = "2026-11-27"
+
+# Set ALLOWED_ORIGIN as an environment variable after choosing the real
+# production hostname. Do not use "*" for a credential-bearing API.
