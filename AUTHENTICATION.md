@@ -19,6 +19,21 @@ Supabase Auth must issue asymmetric ES256 or RS256 access tokens and expose its 
 - AI route is disabled unless `MSTK_AI_ENABLED=true`; validates HTTPS endpoint, requires a server-side API key and model, caps prompt at 12,000 characters, and applies a 30-second timeout.
 - Existing origin, rate-limit binding, and declared request-size guards retained.
 
+## Browser workspace data
+
+The frontend currently uses the signed-in Supabase access token and the public project URL / publishable (or anon) key to call Supabase REST endpoints for:
+
+- Creating and listing workspaces.
+- Creating and listing projects within the selected workspace.
+- Creating and listing conversations within the selected workspace.
+- Saving and reading user-authored messages for a selected conversation.
+
+The browser does not use a service-role key. These requests rely on the database grants and row-level security policies in the checked-in migrations. A UI implementation or a successful static test does not prove that a live project has applied those migrations or that live authorization is correct. Apply and test migrations in a non-production Supabase project first. The message UI currently saves user messages only; assistant responses are not generated or saved.
+
+## Blind comparison preview
+
+The workspace includes a manual A/B comparison mode. It randomizes which pasted response appears as A or B, hides source labels until the user chooses a response, and then reveals the selected response and its source. This is a client-side comparison aid only: it does not call AI providers, guarantee statistical blinding, store comparison results, or independently evaluate answer quality.
+
 ## AI adapter configuration and safeguards
 
 Configure `MSTK_AI_CHAT_COMPLETIONS_URL`, `MSTK_AI_MODEL`, and `MSTK_AI_API_KEY` only after selecting a provider whose official API terms, regional availability, pricing, and age rules permit the intended users. Store the key as a Cloudflare Worker secret; never expose it to the browser or commit it. Do not enable services restricted to adults in a teen-facing product. API usage may incur charges; this branch does not select a provider, configure credentials, or enable the adapter.
