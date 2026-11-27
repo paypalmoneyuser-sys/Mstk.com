@@ -185,7 +185,7 @@ test("Supabase session expiry is tracked and refreshed before protected requests
   assert.match(html, /session\._mstkExpiresAt=Date\.now\(\)\+Math\.max\(0,Number\(session\.expires_in\)\)\*1000/);
   assert.match(html, /function refreshSessionIfNeeded\(\)/);
   assert.match(html, /token\?grant_type=refresh_token/);
-  assert.match(html, /refresh_token:mstkSession\.refresh_token/);
+  assert.match(html, /refresh_token:sessionAtStart\.refresh_token/);
   assert.match(html, /await refreshSessionIfNeeded\(\);\s*const headers=\{apikey:config\.key,authorization:'Bearer '\+mstkSession\.access_token/);
   assert.match(html, /await refreshSessionIfNeeded\(\);\s*if\(!config\.apiBase\)/);
 });
