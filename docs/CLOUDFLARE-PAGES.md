@@ -11,7 +11,7 @@ Because account and service terms may impose age and contracting requirements, a
 ## Repository facts that affect deployment
 
 - The static frontend currently lives at the repository root alongside backend code, migrations, tests, and documentation.
-- The HTML entry point is named `Index.html` with a capital I. Static hosts conventionally expect a lowercase `index.html` for the root page.
+- The HTML entry point is named `index.html` with a capital I. Static hosts conventionally expect a lowercase `index.html` for the root page.
 - The backend is a separate Cloudflare Worker described by `wrangler.toml`; Pages static hosting does not deploy that Worker automatically.
 - `mstk-config.js` is intentionally local-only and ignored by Git. Only the Supabase project URL, publishable/anon key, and optional API origin belong in browser configuration. Never put service-role keys, signing secrets, passwords, or provider API keys in the static site.
 - The application has not been verified against a live Supabase project or a deployed Worker.
