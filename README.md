@@ -8,7 +8,7 @@ This branch builds on the backend scaffold and adds a protected API boundary usi
 - Public `GET /api/health`; protected `GET /api/me`
 - Supabase JWKS signature verification for ES256 and RS256 access tokens
 - Issuer, audience, role, subject, expiry, not-before, and issued-at checks
-- Strict single-origin CORS, security headers, request-size guard, fail-closed rate-limit binding
+- Strict single-origin CORS, security headers, actual streamed request-body enforcement (1 MiB cap), fail-closed rate-limit binding
 - Supabase schema migrations and PostgreSQL RLS / tenant-integrity smoke tests
 - Browser UI for creating and listing workspaces, projects, conversations, and user messages through the Supabase REST API using the signed-in user's access token
 - Manual blind A/B response comparison with randomized display order and a user-selected best response; no automatic provider calls
@@ -42,7 +42,7 @@ The AI adapter remains disabled unless `MSTK_AI_ENABLED=true`. To configure one 
 - Live database connectivity and per-resource authorization have not been verified against a production Supabase project. Usage metering, quota enforcement, and provider-specific policy checks are not implemented.
 - No user-facing prompt retention controls; do not send sensitive personal information. Provider processing and retention terms apply.
 - The Cloudflare rate-limit binding and production frontend origin are not configured.
-- Future streaming/upload handlers must enforce actual bytes read, not only declared Content-Length.
+- Current API routes enforce the actual request-body bytes read, with a 1 MiB cap; any future upload/streaming feature needs its own bounded streaming/storage controls.
 - No production deployment, custom domain, monitoring, or end-to-end Cloudflare test is configured. GitHub Actions is configured to run Node checks and PostgreSQL migration/RLS smoke tests for the relevant feature branches, but a passing run must be observed before claiming CI success.
 - No paid service has been enabled or purchased.
 
