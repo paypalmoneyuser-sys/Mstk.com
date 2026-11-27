@@ -31,3 +31,9 @@ test("MSTK protected API verification uses a separately configured API base URL"
   assert.match(html, /MSTK_CONFIG\.apiBase/);
   assert.match(html, /new URL\('\/api\/me',config\.apiBase\)/);
 });
+
+test("AI workspace sends prompts only through the authenticated MSTK API", () => {
+  assert.match(html, /new URL\('\/api\/ai\/chat',config\.apiBase\)/);
+  assert.match(html, /authorization:'Bearer '\+mstkSession\.access_token/);
+  assert.match(html, /AI provider is not enabled yet/);
+});
