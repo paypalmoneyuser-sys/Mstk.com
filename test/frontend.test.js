@@ -324,3 +324,60 @@ test("every required local frontend asset is present and optional config setup i
   assert.ok(readme.includes("copy `mstk-config.example.js` to `mstk-config.js`"));
   assert.ok(appScript.includes("window.MSTK_CONFIG || {}"));
 });
+
+
+test("Pages build publishes only the four allowlisted static files", async () => {
+  const { mkdtemp, readdir, readFile: readBuiltFile, rm } = await import("node:fs/promises");
+  const os = await import("node:os");
+  const path = await import("node:path");
+  const { buildPages } = await import("../scripts/build-pages.js");
+  const temp = await mkdtemp(path.join(os.tmpdir(), "mstk-pages-test-"));
+  const output = path.join(temp, "dist");
+  try {
+    const result = await buildPages({ outputDir: output, env: {} });
+    assert.deepEqual((await readdir(output)).sort(), ["app.js", "index.html", "mstk-config.js", "styles.css"]);
+    assert.deepEqual(result.files, ["index.html", "app.js", "styles.css", "mstk-config.js"]);
+    const builtHtml = await readBuiltFile(path.join(output, "index.html"), "utf8");
+    const builtConfig = await readBuiltFile(path.join(output, "mstk-config.js"), "utf8");
+    assert.match(builtHtml, /href="\/styles\.css"/);
+    assert.match(builtHtml, /src="\/mstk-config\.js"/);
+    assert.match(builtHtml, /src="\/app\.js"/);
+    assert.doesNotMatch(builtConfig, /service_role|serviceRoleKey|jwt_secret|OPENAI_API_KEY/i);
+    assert.match(builtConfig, /supabaseUrl:""|supabaseUrl:""/);
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
+
+test("Pages build embeds only explicitly named public settings and validates HTTPS origins", async () => {
+  const { mkdtemp, readFile: readBuiltFile, rm } = await import("node:fs/promises");
+  const os = await import("node:os");
+  const path = await import("node:path");
+  const { buildPages } = await import("../scripts/build-pages.js");
+  const temp = await mkdtemp(path.join(os.tmpdir(), "mstk-pages-config-test-"));
+  const output = path.join(temp, "dist");
+  try {
+    await buildPages({
+      outputDir: output,
+      env: {
+        MSTK_PUBLIC_SUPABASE_URL: "https://project.example",
+        MSTK_PUBLIC_SUPABASE_ANON_KEY: "public-test-key",
+        MSTK_PUBLIC_API_BASE: "https://api.example"
+      }
+    });
+    const config = await readBuiltFile(path.join(output, "mstk-config.js"), "utf8");
+    assert.match(config, /https:\\/\\/project\.example/);
+    assert.match(config, /public-test-key/);
+    assert.match(config, /https:\\/\\/api\.example/);
+    await assert.rejects(
+      buildPages({ outputDir: output, env: { MSTK_PUBLIC_SUPABASE_URL: "http://insecure.example" } }),
+      /must be an HTTPS origin/
+    );
+    await assert.rejects(
+      buildPages({ outputDir: output, env: { MSTK_PUBLIC_API_BASE: "https://api.example/path" } }),
+      /must be an HTTPS origin/
+    );
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
