@@ -102,3 +102,32 @@ test("workspace list renders names and identifiers as text, not HTML", () => {
   assert.match(html, /id\.textContent='Workspace ID: '\+workspace\.id/);
   assert.match(html, /card\.append\(name,id\)/);
 });
+
+
+test("workspace supports project creation and scoped project listing", () => {
+  for (const id of ["project-name", "create-project-button", "project-list", "selected-workspace-title"]) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.match(html, /workspaceRequest\('projects','POST'/);
+  assert.match(html, /projects\?select=id,name,description,created_at&workspace_id=eq\./);
+});
+
+test("workspace supports conversation creation and selected conversation history", () => {
+  for (const id of ["conversation-title", "create-conversation-button", "conversation-list", "message-history", "history-status"]) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.match(html, /workspaceRequest\('conversations','POST'/);
+  assert.match(html, /conversations\?select=id,title,created_at&workspace_id=eq\./);
+  assert.match(html, /messages\?select=id,role,content,created_at&conversation_id=eq\./);
+});
+
+test("user messages are saved only to the selected conversation and rendered as text", () => {
+  assert.match(html, /conversation_id:selectedConversation\.id,workspace_id:selectedWorkspace\.id,created_by:mstkSession\.user\.id,role:'user',content:value/);
+  assert.match(html, /content\.textContent=message\.content/);
+  assert.match(html, /AI replies are not saved yet/);
+});
+
+test("workspace state is cleared on sign out", () => {
+  assert.match(html, /selectedWorkspace=null;selectedConversation=null;resetWorkspacePanels\(\)/);
+  assert.match(html, /if\(!selectedWorkspace\)return/);
+});
