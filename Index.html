@@ -63,6 +63,13 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 .workspace-item{padding:14px;border-radius:10px;background:#242538;border:1px solid #37394e}
 .workspace-item strong{display:block;color:#e5ddff;margin-bottom:6px;overflow-wrap:anywhere}
 .workspace-item span{font-size:12px;color:#b9bdd0}
+
+.workspace-item.selected{border-color:#a78bfa;background:#302c49}
+.workspace-item button{margin-top:10px}
+.message-history{display:grid;gap:8px;margin-top:12px}
+.message-item{padding:12px;border-radius:10px;background:#242538;border:1px solid #37394e}
+.message-item strong{display:block;color:#c4b5fd;font-size:12px;margin-bottom:5px}
+.message-item p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:14px}
 </style>
 </head>
 <body>
@@ -139,7 +146,7 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <h1>AI Workspace</h1>
 <div class="panel">
 <h3>Your Workspaces</h3>
-<p class="note">Create and view workspaces in your configured Supabase database. Access is controlled by the database's row-level security policies.</p>
+<p class="note">Create and select a workspace. Data access is controlled by your Supabase database's row-level security policies.</p>
 <label for="workspace-name">New workspace name</label>
 <input id="workspace-name" type="text" maxlength="100" placeholder="e.g. My Projects">
 <button class="action" id="create-workspace-button" onclick="createWorkspace()">Create workspace</button>
@@ -148,11 +155,27 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 <div id="workspace-list" class="workspace-list" aria-live="polite"></div>
 </div>
 <div class="panel">
-<h3>New AI Conversation</h3>
-<textarea id="prompt" maxlength="12000" placeholder="Write your prompt here..."></textarea>
-<button class="action" onclick="sendPrompt()">Send</button>
+<h3 id="selected-workspace-title">Select a workspace to manage projects</h3>
+<label for="project-name">New project name</label>
+<input id="project-name" type="text" maxlength="120" placeholder="e.g. Website redesign">
+<button class="action" id="create-project-button" onclick="createProject()" disabled>Create project</button>
+<div id="project-list" class="workspace-list"></div>
+</div>
+<div class="panel">
+<h3>Conversations</h3>
+<label for="conversation-title">New conversation title</label>
+<input id="conversation-title" type="text" maxlength="200" placeholder="e.g. Planning and ideas">
+<button class="action" id="create-conversation-button" onclick="createConversation()" disabled>New conversation</button>
+<div id="conversation-list" class="workspace-list"></div>
+<div id="history-status" class="status" role="status" aria-live="polite">Select a workspace first.</div>
+<div id="message-history" class="message-history" aria-live="polite"></div>
+</div>
+<div class="panel">
+<h3>Send a message</h3>
+<p class="note">Messages are saved to the selected conversation. AI replies are not saved yet; provider connections remain disabled.</p>
+<textarea id="prompt" maxlength="12000" placeholder="Write your prompt here..." disabled></textarea>
+<button class="action" id="send-prompt-button" onclick="sendPrompt()" disabled>Save message &amp; send</button>
 <div id="response"></div>
-<p class="note">The secure AI backend adapter is ready for testing, but live providers remain disabled until an eligible provider is reviewed and configured. No provider is connected yet. Prompts are not saved to workspace history in this preview.</p>
 </div>
 </section>
 <section id="image" class="page"><h1>Image Studio</h1><div class="panel"><h3>Create Images</h3><textarea placeholder="Describe your image..."></textarea><p class="note">Image generation integration pending.</p></div></section>
@@ -190,6 +213,8 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 // Never place a service-role key or JWT signing secret in this browser configuration.
 const MSTK_CONFIG = window.MSTK_CONFIG || {};
 let mstkSession = null;
+let selectedWorkspace = null;
+let selectedConversation = null;
 
 function show(id){
   document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
@@ -285,6 +310,7 @@ async function signOut(){
   setSignedIn(false);
   document.getElementById('workspace-list')?.replaceChildren();
   setWorkspaceStatus('Sign in to load your workspaces.');
+  selectedWorkspace=null;selectedConversation=null;resetWorkspacePanels();
   setStatus('Signed out of this page session.','good');
 }
 
@@ -314,42 +340,142 @@ async function loadWorkspaces(){
   if(!list)return;
   if(!mstkSession?.access_token){list.replaceChildren();setWorkspaceStatus('Sign in to load your workspaces.');return;}
   const button=document.getElementById('refresh-workspaces-button');
-  button.disabled=true;
-  setWorkspaceStatus('Loading your workspaces…');
+  button.disabled=true;setWorkspaceStatus('Loading your workspaces…');
   try{
     const rows=await workspaceRequest('workspaces?select=id,name,created_at&order=created_at.desc');
     list.replaceChildren();
     for(const workspace of Array.isArray(rows)?rows:[]){
-      const card=document.createElement('article');card.className='workspace-item';
+      const card=document.createElement('article');card.className='workspace-item'+(selectedWorkspace?.id===workspace.id?' selected':'');
       const name=document.createElement('strong');name.textContent=workspace.name;
       const id=document.createElement('span');id.textContent='Workspace ID: '+workspace.id;
-      card.append(name,id);list.append(card);
+      const select=document.createElement('button');select.className='action secondary';select.textContent=selectedWorkspace?.id===workspace.id?'Selected':'Open workspace';
+      select.addEventListener('click',()=>selectWorkspace(workspace));
+      card.append(name,id,select);list.append(card);
     }
     setWorkspaceStatus(rows.length?('Loaded '+rows.length+' workspace(s).'):'No workspaces yet. Create your first one.','good');
-  }catch(error){
-    list.replaceChildren();
-    setWorkspaceStatus(error.message||'Unable to load workspaces.','error');
-  }finally{button.disabled=false;}
+    if(selectedWorkspace&&!rows.some(w=>w.id===selectedWorkspace.id)){selectedWorkspace=null;selectedConversation=null;resetWorkspacePanels();}
+    if(selectedWorkspace)await selectWorkspace(selectedWorkspace);
+  }catch(error){list.replaceChildren();setWorkspaceStatus(error.message||'Unable to load workspaces.','error');}
+  finally{button.disabled=false;}
+}
+function resetWorkspacePanels(){
+  document.getElementById('selected-workspace-title').textContent='Select a workspace to manage projects';
+  document.getElementById('project-list').replaceChildren();
+  document.getElementById('conversation-list').replaceChildren();
+  document.getElementById('message-history').replaceChildren();
+  document.getElementById('project-name').disabled=true;
+  document.getElementById('create-project-button').disabled=true;
+  document.getElementById('conversation-title').disabled=true;
+  document.getElementById('create-conversation-button').disabled=true;
+  document.getElementById('prompt').disabled=true;
+  document.getElementById('send-prompt-button').disabled=true;
+  document.getElementById('history-status').textContent='Select a workspace first.';
+}
+async function selectWorkspace(workspace){
+  selectedWorkspace=workspace;selectedConversation=null;
+  document.getElementById('selected-workspace-title').textContent='Workspace: '+workspace.name;
+  document.getElementById('project-name').disabled=false;
+  document.getElementById('create-project-button').disabled=false;
+  document.getElementById('conversation-title').disabled=false;
+  document.getElementById('create-conversation-button').disabled=false;
+  document.getElementById('prompt').disabled=true;
+  document.getElementById('send-prompt-button').disabled=true;
+  await Promise.all([loadProjects(),loadConversations()]);
+  document.querySelectorAll('#workspace-list .workspace-item').forEach(card=>card.classList.toggle('selected',card.querySelector('span')?.textContent==='Workspace ID: '+workspace.id));
+}
+async function loadProjects(){
+  if(!selectedWorkspace)return;
+  const list=document.getElementById('project-list');list.replaceChildren();
+  try{
+    const rows=await workspaceRequest('projects?select=id,name,description,created_at&workspace_id=eq.'+encodeURIComponent(selectedWorkspace.id)+'&order=created_at.desc');
+    for(const project of rows||[]){
+      const card=document.createElement('article');card.className='workspace-item';
+      const name=document.createElement('strong');name.textContent=project.name;
+      const desc=document.createElement('span');desc.textContent=project.description||'Project';
+      card.append(name,desc);list.append(card);
+    }
+  }catch(error){setWorkspaceStatus(error.message||'Unable to load projects.','error');}
+}
+async function createProject(){
+  const input=document.getElementById('project-name'),button=document.getElementById('create-project-button');
+  const name=input.value.trim();
+  if(!selectedWorkspace||!name||name.length>120){setWorkspaceStatus('Select a workspace and enter a project name up to 120 characters.','error');return;}
+  button.disabled=true;
+  try{
+    await workspaceRequest('projects','POST',{workspace_id:selectedWorkspace.id,created_by:mstkSession.user.id,name});
+    input.value='';await loadProjects();setWorkspaceStatus('Project created.','good');
+  }catch(error){setWorkspaceStatus(error.message||'Unable to create project.','error');}
+  finally{button.disabled=false;}
+}
+async function loadConversations(){
+  if(!selectedWorkspace)return;
+  const list=document.getElementById('conversation-list');list.replaceChildren();
+  try{
+    const rows=await workspaceRequest('conversations?select=id,title,created_at&workspace_id=eq.'+encodeURIComponent(selectedWorkspace.id)+'&order=created_at.desc');
+    for(const conversation of rows||[]){
+      const card=document.createElement('article');card.className='workspace-item'+(selectedConversation?.id===conversation.id?' selected':'');
+      const title=document.createElement('strong');title.textContent=conversation.title;
+      const open=document.createElement('button');open.className='action secondary';open.textContent=selectedConversation?.id===conversation.id?'Open':'Open conversation';
+      open.addEventListener('click',()=>selectConversation(conversation));
+      card.append(title,open);list.append(card);
+    }
+  }catch(error){setWorkspaceStatus(error.message||'Unable to load conversations.','error');}
+}
+async function createConversation(){
+  const input=document.getElementById('conversation-title'),button=document.getElementById('create-conversation-button');
+  const title=input.value.trim()||'New chat';
+  if(!selectedWorkspace||title.length>200){setWorkspaceStatus('Select a workspace and use a title up to 200 characters.','error');return;}
+  button.disabled=true;
+  try{
+    const rows=await workspaceRequest('conversations','POST',{workspace_id:selectedWorkspace.id,created_by:mstkSession.user.id,title});
+    input.value='';
+    if(Array.isArray(rows)&&rows[0])await selectConversation(rows[0]);
+    await loadConversations();setWorkspaceStatus('Conversation created.','good');
+  }catch(error){setWorkspaceStatus(error.message||'Unable to create conversation.','error');}
+  finally{button.disabled=false;}
+}
+async function selectConversation(conversation){
+  selectedConversation=conversation;
+  document.getElementById('prompt').disabled=false;
+  document.getElementById('send-prompt-button').disabled=false;
+  document.getElementById('history-status').textContent='Loading message history…';
+  await loadMessages();
+  await loadConversations();
+}
+async function loadMessages(){
+  if(!selectedConversation||!selectedWorkspace)return;
+  const list=document.getElementById('message-history');list.replaceChildren();
+  try{
+    const rows=await workspaceRequest('messages?select=id,role,content,created_at&conversation_id=eq.'+encodeURIComponent(selectedConversation.id)+'&workspace_id=eq.'+encodeURIComponent(selectedWorkspace.id)+'&order=created_at.asc');
+    for(const message of rows||[]){
+      const card=document.createElement('article');card.className='message-item';
+      const role=document.createElement('strong');role.textContent=message.role==='user'?'You':message.role;
+      const content=document.createElement('p');content.textContent=message.content;
+      card.append(role,content);list.append(card);
+    }
+    document.getElementById('history-status').textContent=(rows||[]).length+' saved message(s).';
+  }catch(error){document.getElementById('history-status').textContent=error.message||'Unable to load message history.';}
 }
 async function createWorkspace(){
-  const input=document.getElementById('workspace-name');
-  const button=document.getElementById('create-workspace-button');
-  const name=input.value.trim();
+  const input=document.getElementById('workspace-name'),button=document.getElementById('create-workspace-button'),name=input.value.trim();
   if(!name||name.length>100){setWorkspaceStatus('Enter a workspace name between 1 and 100 characters.','error');return;}
   if(!mstkSession?.access_token||!mstkSession?.user?.id){setWorkspaceStatus('Sign in before creating a workspace.','error');return;}
   button.disabled=true;
-  try{
-    await workspaceRequest('workspaces','POST',{name,owner_id:mstkSession.user.id});
-    input.value='';
-    setWorkspaceStatus('Workspace created.','good');
-    await loadWorkspaces();
-  }catch(error){
-    setWorkspaceStatus(error.message||'Unable to create workspace.','error');
-  }finally{button.disabled=false;}
+  try{await workspaceRequest('workspaces','POST',{name,owner_id:mstkSession.user.id});input.value='';setWorkspaceStatus('Workspace created.','good');await loadWorkspaces();}
+  catch(error){setWorkspaceStatus(error.message||'Unable to create workspace.','error');}
+  finally{button.disabled=false;}
 }
 async function sendPrompt(){
   const value=document.getElementById('prompt').value.trim();
   if(!value)return;
+  if(!selectedWorkspace||!selectedConversation){setWorkspaceStatus('Select a workspace and conversation before sending a message.','error');return;}
+  const sendButton=document.getElementById('send-prompt-button');sendButton.disabled=true;
+  try{
+    await workspaceRequest('messages','POST',{conversation_id:selectedConversation.id,workspace_id:selectedWorkspace.id,created_by:mstkSession.user.id,role:'user',content:value});
+    document.getElementById('prompt').value='';
+    await loadMessages();
+  }catch(error){document.getElementById('response').textContent=error.message||'Unable to save message.';sendButton.disabled=false;return;}
+
   const response=document.getElementById('response');
   response.replaceChildren();
   const panel=document.createElement('div');panel.className='panel';
@@ -376,7 +502,7 @@ async function sendPrompt(){
   }catch(error){
     note.textContent=error.message||'MSTK AI is temporarily unavailable.';
     note.classList.add('error');
-  }
+  }finally{sendButton.disabled=false;}
 }
 
 const MSTK_TOOLS = [
