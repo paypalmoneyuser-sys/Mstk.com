@@ -19,3 +19,13 @@
 
 -- IMPORTANT: Tests are NOT automated by this checklist and have NOT been executed.
 -- Use real separate sessions/JWTs or Supabase's supported RLS test harness.
+
+
+-- Additional required case for migration 0003:
+-- 1. User A creates a project and a conversation in Workspace W.
+-- 2. Workspace owner removes User A from workspace_members.
+-- 3. As User A's authenticated JWT, attempt to delete the project and conversation.
+-- Expected: both deletes affect zero rows / are denied by RLS.
+-- 4. As workspace owner, delete the same records.
+-- Expected: owner delete succeeds.
+-- Run these checks in a disposable Supabase project after applying migrations 0001-0003.
