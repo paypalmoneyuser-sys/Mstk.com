@@ -295,13 +295,13 @@ test("frontend CSS and application JavaScript are external assets", () => {
 });
 
 test("frontend remains compatible with a strict external-asset CSP", () => {
-  assert.equal((html.match(/<style\\b/gi) || []).length, 0);
+  assert.equal((html.match(/<style\b/gi) || []).length, 0);
   assert.equal((html.match(/\\sstyle\\s*=/gi) || []).length, 0);
-  assert.equal((html.match(/\\son[a-z]+\\s*=/gi) || []).length, 0);
-  assert.equal((html.match(/javascript\\s*:/gi) || []).length, 0);
-  const scriptTags = [...html.matchAll(/<script\\b([^>]*)>/gi)];
+  assert.equal((html.match(/\son[a-z]+\s*=/gi) || []).length, 0);
+  assert.equal((html.match(/javascript\s*:/gi) || []).length, 0);
+  const scriptTags = [...html.matchAll(/<script\b([^>]*)>/gi)];
   assert.ok(scriptTags.length >= 2);
-  assert.ok(scriptTags.every((tag) => /\\bsrc\\s*=/.test(tag[1])));
+  assert.ok(scriptTags.every((tag) => /\bsrc\s*=/.test(tag[1])));
   assert.match(frontendSecurity, /script-src 'self'/);
   assert.match(frontendSecurity, /style-src 'self'/);
   assert.doesNotMatch(frontendSecurity, /unsafe-inline|unsafe-eval/);
