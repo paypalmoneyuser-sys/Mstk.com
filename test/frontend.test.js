@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
 const html = await readFile(new URL("../Index.html", import.meta.url), "utf8");
-const scriptMatch = html.match(/<script>([\\s\\S]*?)<\\/script>/i);
+const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/i);
 
 test("frontend contains a parseable inline JavaScript bundle", () => {
   assert.ok(scriptMatch, "expected one inline script block");
