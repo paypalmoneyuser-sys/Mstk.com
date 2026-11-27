@@ -343,7 +343,7 @@ test("Pages build publishes only the four allowlisted static files", async () =>
     assert.match(builtHtml, /src="\/mstk-config\.js"/);
     assert.match(builtHtml, /src="\/app\.js"/);
     assert.doesNotMatch(builtConfig, /service_role|serviceRoleKey|jwt_secret|OPENAI_API_KEY/i);
-    assert.match(builtConfig, /supabaseUrl:""|supabaseUrl:""/);
+    assert.match(builtConfig, /"supabaseUrl":""/);
   } finally {
     await rm(temp, { recursive: true, force: true });
   }
