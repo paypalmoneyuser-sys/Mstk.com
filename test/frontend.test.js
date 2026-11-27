@@ -247,7 +247,7 @@ test("a refresh completing after sign-out cannot restore the previous session", 
   assert.match(html, /const sessionAtStart=mstkSession/);
   assert.match(html, /if\(mstkSession!==sessionAtStart\)return null/);
   assert.match(html, /const sessionAtSignOut=mstkSession/);
-  assert.match(html, /authorization: 'Bearer '\+sessionAtSignOut\.access_token/);
+  assert.match(html, /authorization:'Bearer '\+sessionAtSignOut\.access_token/);
 });
 
 test("refresh failure only clears the session that initiated the failed refresh", () => {
