@@ -112,7 +112,9 @@ function authConfig(){
     const url=new URL(MSTK_CONFIG.supabaseUrl);
     if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)return null;
     if(!MSTK_CONFIG.supabaseAnonKey.trim())return null;
-    let apiBase='';\n    if(typeof MSTK_CONFIG.apiBase==='string'&&MSTK_CONFIG.apiBase.trim()){const apiUrl=new URL(MSTK_CONFIG.apiBase);if(apiUrl.protocol!=='https:'||apiUrl.username||apiUrl.password||apiUrl.search||apiUrl.hash)return null;apiBase=apiUrl.toString().replace(/\\/$/,'');}\n    return {base:url.toString().replace(/\\/$/,''),key:MSTK_CONFIG.supabaseAnonKey,apiBase};
+    let apiBase='';
+    if(typeof MSTK_CONFIG.apiBase==='string'&&MSTK_CONFIG.apiBase.trim()){const apiUrl=new URL(MSTK_CONFIG.apiBase);if(apiUrl.protocol!=='https:'||apiUrl.username||apiUrl.password||apiUrl.search||apiUrl.hash)return null;apiBase=apiUrl.toString().replace(/\\/$/,'');}
+    return {base:url.toString().replace(/\\/$/,''),key:MSTK_CONFIG.supabaseAnonKey,apiBase};
   }catch{return null;}
 }
 async function authRequest(path,body,token){
@@ -160,7 +162,8 @@ async function verifySession(){
   if(!mstkSession?.access_token)return;
   const config=authConfig();
   try{
-    if(!config.apiBase)throw new Error('MSTK API base URL is not configured; Supabase sign-in may work, but API session verification is unavailable.');\n    const response=await fetch(new URL('/api/me',config.apiBase).toString(),{headers:{authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
+    if(!config.apiBase)throw new Error('MSTK API base URL is not configured; Supabase sign-in may work, but API session verification is unavailable.');
+    const response=await fetch(new URL('/api/me',config.apiBase).toString(),{headers:{authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
     if(!response.ok)throw new Error('MSTK API verification failed (HTTP '+response.status+').');
     const data=await response.json();
     setStatus('MSTK API verified this session. User ID: '+data.user.id,'good');
