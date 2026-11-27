@@ -169,6 +169,69 @@ async function verifySupabaseAccessToken(request, env) {
   }
 }
 
+async function handleAiChat(request, env) {
+  if (env.MSTK_AI_ENABLED !== "true") {
+    return json({ error: "ai_provider_not_enabled" }, 503);
+  }
+  if (typeof env.MSTK_AI_CHAT_COMPLETIONS_URL !== "string" ||
+      typeof env.MSTK_AI_API_KEY !== "string" ||
+      typeof env.MSTK_AI_MODEL !== "string" ||
+      !env.MSTK_AI_API_KEY.trim() || !env.MSTK_AI_MODEL.trim()) {
+    return json({ error: "ai_provider_not_configured" }, 503);
+  }
+
+  let endpoint;
+  try {
+    endpoint = new URL(env.MSTK_AI_CHAT_COMPLETIONS_URL);
+    if (endpoint.protocol !== "https:" || endpoint.username || endpoint.password ||
+        endpoint.search || endpoint.hash || !endpoint.pathname.endsWith("/chat/completions")) {
+      return json({ error: "ai_provider_configuration_invalid" }, 503);
+    }
+  } catch {
+    return json({ error: "ai_provider_configuration_invalid" }, 503);
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "invalid_json" }, 400);
+  }
+  if (!body || typeof body.prompt !== "string" ||
+      !body.prompt.trim() || body.prompt.length > 12000) {
+    return json({ error: "invalid_prompt" }, 400);
+  }
+
+  try {
+    const response = await fetch(endpoint.toString(), {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${env.MSTK_AI_API_KEY}`,
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        model: env.MSTK_AI_MODEL,
+        messages: [{ role: "user", content: body.prompt }],
+        max_tokens: 1024,
+      }),
+      redirect: "error",
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!response.ok) {
+      return json({ error: "ai_provider_request_failed" }, 502);
+    }
+    const result = await response.json();
+    const answer = result?.choices?.[0]?.message?.content;
+    if (typeof answer !== "string" || !answer.trim()) {
+      return json({ error: "ai_provider_response_invalid" }, 502);
+    }
+    return json({ answer, model: env.MSTK_AI_MODEL }, 200);
+  } catch {
+    return json({ error: "ai_provider_unavailable" }, 502);
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -203,6 +266,10 @@ export default {
     if (url.pathname === "/api/me") {
       if (request.method !== "GET") return json({ error: "method_not_allowed" }, 405, cors);
       return json({ user: auth.user }, 200, cors);
+    }
+    if (url.pathname === "/api/ai/chat") {
+      if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, cors);
+      return handleAiChat(request, env);
     }
     return json({ error: "not_found" }, 404, cors);
   },
