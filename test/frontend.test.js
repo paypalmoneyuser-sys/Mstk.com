@@ -101,7 +101,7 @@ test("workspace data requests use the signed-in Supabase session and RLS REST AP
 test("workspace list renders names and identifiers as text, not HTML", () => {
   assert.match(html, /name\.textContent=workspace\.name/);
   assert.match(html, /id\.textContent='Workspace ID: '\+workspace\.id/);
-  assert.match(html, /card\.append\(name,id\)/);
+  assert.match(html, /card\.append\(name,id,select\)/);
 });
 
 
