@@ -7,11 +7,11 @@ const html = await readFile(new URL("../Index.html", import.meta.url), "utf8");
 const schema = await readFile(new URL("../supabase/migrations/0001_initial_workspace_schema.sql", import.meta.url), "utf8");
 const frontendConfigTemplate = await readFile(new URL("../mstk-config.example.js", import.meta.url), "utf8");
 const gitignore = await readFile(new URL("../.gitignore", import.meta.url), "utf8");
-const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/i);
+const appScript = await readFile(new URL("../app.js", import.meta.url), "utf8");
 
-test("frontend contains a parseable inline JavaScript bundle", () => {
-  assert.ok(scriptMatch, "expected one inline script block");
-  assert.doesNotThrow(() => new vm.Script(scriptMatch[1]));
+test("frontend application JavaScript is external and parseable", () => {
+  assert.match(html, /<script src="\/app\.js"><\/script>/);
+  assert.doesNotThrow(() => new vm.Script(appScript));
 });
 
 test("account UI exposes sign-in, sign-up, sign-out and session verification", () => {
@@ -233,7 +233,7 @@ test("password reset updates the authenticated Supabase user and clears the temp
 });
 
 test("browser auth tokens are not persisted in web storage", () => {
-  assert.doesNotMatch(scriptMatch[1], /localStorage|sessionStorage/);
+  assert.doesNotMatch(appScript, /localStorage|sessionStorage/);
   assert.match(html, /keeps the session in page memory only/);
 });
 
@@ -259,9 +259,9 @@ test("refresh failure only clears the session that initiated the failed refresh"
 
 test("frontend configuration template loads before the application script", () => {
   const configScript = html.indexOf('<script src="/mstk-config.js"></script>');
-  const appScript = html.indexOf("<script>", configScript + 1);
+  const appScriptIndex = html.indexOf('<script src="/app.js"></script>');
   assert.ok(configScript >= 0, "expected the optional local config script");
-  assert.ok(appScript > configScript, "app code must run after frontend config");
+  assert.ok(appScriptIndex > configScript, "app code must run after frontend config");
   assert.match(frontendConfigTemplate, /window\.MSTK_CONFIG\s*=\s*Object\.freeze/);
   assert.match(frontendConfigTemplate, /supabaseUrl:/);
   assert.match(frontendConfigTemplate, /supabaseAnonKey:/);
