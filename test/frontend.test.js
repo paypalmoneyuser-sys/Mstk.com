@@ -201,7 +201,7 @@ test("failed Supabase refresh clears the in-memory session and asks the user to 
 
 test("account UI exposes a password recovery request and reset panel", () => {
   assert.match(html, /id="recover-button"/);
-  assert.match(html, /onclick="recoverAccount\(\)"/);
+  assert.match(html, /data-mstk-action="recover"/);
   assert.match(html, /id="password-recovery-panel"/);
   assert.match(html, /id="recovery-password"/);
   assert.match(html, /id="reset-password-button"/);
@@ -273,4 +273,12 @@ test("local frontend config is ignored by Git and example contains no real crede
   assert.match(frontendConfigTemplate, /YOUR-PROJECT/);
   assert.match(frontendConfigTemplate, /YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY/);
   assert.doesNotMatch(frontendConfigTemplate, /service_role|serviceRoleKey|eyJ[A-Za-z0-9_-]{20,}/i);
+});
+
+test("frontend uses delegated data-action events and contains no inline event handlers", () => {
+  assert.doesNotMatch(html, /\\son[a-z]+\\s*=/i);
+  assert.match(html, /document\.addEventListener\('click'/);
+  for (const action of ["show", "signin", "signup", "recover", "signout", "complete-recovery", "verify-session", "create-workspace", "load-workspaces", "create-project", "create-conversation", "start-comparison", "choose-response", "reveal-comparison", "send-prompt"]) {
+    assert.ok(html.includes('case \' ' + action + '\'') || html.includes('data-mstk-action="' + action + '"'), "missing action " + action);
+  }
 });
