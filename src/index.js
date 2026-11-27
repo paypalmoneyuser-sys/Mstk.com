@@ -169,7 +169,7 @@ async function verifySupabaseAccessToken(request, env) {
   }
 }
 
-async function handleAiChat(request, env) {
+async function handleAiChat(request, env, cors) {
   if (env.MSTK_AI_ENABLED !== "true") {
     return json({ error: "ai_provider_not_enabled" }, 503);
   }
@@ -269,7 +269,7 @@ export default {
     }
     if (url.pathname === "/api/ai/chat") {
       if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, cors);
-      return handleAiChat(request, env);
+      return handleAiChat(request, env, cors);
     }
     return json({ error: "not_found" }, 404, cors);
   },
