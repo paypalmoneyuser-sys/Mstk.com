@@ -1,32 +1,39 @@
-# Authentication and session security foundation
+# Authentication and AI API foundation
 
-This branch adds a protected API boundary using Supabase asymmetric JWT signing keys.
+This branch adds a protected API boundary using Supabase asymmetric JWT signing keys and a disabled-by-default AI chat adapter.
 
-## Configuration
+## Authentication configuration
 
-Set `SUPABASE_URL` to the exact HTTPS project URL in the Worker environment. The Worker derives the issuer and JWKS URL from that value. Do not add the Supabase service-role key or JWT signing secret to this Worker configuration.
+Set `SUPABASE_URL` to the exact HTTPS project URL in the Worker environment. The Worker derives the issuer and JWKS URL from it. Do not add the Supabase service-role key or JWT signing secret to Worker configuration.
 
-Supabase Auth must be configured to issue asymmetric access-token signatures (ES256 or RS256) and expose its JWKS endpoint. Legacy shared-secret HS256 tokens are intentionally rejected.
+Supabase Auth must issue asymmetric ES256 or RS256 access tokens and expose its JWKS endpoint. Legacy HS256 tokens are rejected.
 
-## Implemented in this branch
+## Implemented
 
 - Bearer-token parsing for protected `/api/*` routes (health remains public).
 - JWKS signature verification for ES256 and RS256.
 - Issuer, audience, role, subject UUID, expiry, not-before, and issued-at checks.
 - Five-minute in-isolate JWKS cache.
-- Protected `GET /api/me` endpoint returning only the authenticated user ID and role.
-- Fail-closed behavior if Supabase configuration or JWKS verification is unavailable.
+- Protected `GET /api/me` returns only verified user ID and role.
+- Protected `POST /api/ai/chat` accepts a prompt and calls one configured OpenAI-style chat-completions endpoint server-side.
+- AI route is disabled unless `MSTK_AI_ENABLED=true`; validates HTTPS endpoint, requires a server-side API key and model, caps prompt at 12,000 characters, and applies a 30-second timeout.
 - Existing origin, rate-limit binding, and declared request-size guards retained.
+
+## AI adapter configuration and safeguards
+
+Configure `MSTK_AI_CHAT_COMPLETIONS_URL`, `MSTK_AI_MODEL`, and `MSTK_AI_API_KEY` only after selecting a provider whose official API terms, regional availability, pricing, and age rules permit the intended users. Store the key as a Cloudflare Worker secret; never expose it to the browser or commit it. Do not enable services restricted to adults in a teen-facing product. API usage may incur charges; this branch does not select a provider, configure credentials, or enable the adapter.
+
+The adapter sends the user prompt to the selected provider. Do not send sensitive personal data. Provider-side processing and retention are governed by that provider's terms. No prompt history is stored by this endpoint, but provider-side retention is not controlled here.
 
 ## Still required before production
 
-- Configure Supabase Auth asymmetric signing keys and validate the live project JWKS.
-- Verify behavior against real Supabase-issued access and refresh tokens.
-- Configure Cloudflare rate-limiting binding and real frontend origin.
-- Add authorization checks for each workspace/resource operation and ensure database access uses the verified identity (never trust client-supplied user IDs).
-- Add invitation, account recovery, email verification, logout/revocation, and session lifecycle flows in the frontend.
+- Configure Supabase Auth asymmetric signing keys and validate live project JWKS.
+- Test with real Supabase-issued access and refresh tokens.
+- Configure Cloudflare rate-limiting binding and the real frontend origin.
+- Add resource-level authorization and database access based only on verified identity.
+- Add invitation, account recovery, email verification, logout/revocation, and complete session lifecycle.
 - Add streamed request-byte enforcement for future upload/body handlers.
-- Run integration, penetration, dependency, and production end-to-end tests.
-- Review privacy, retention, and guardian/age-appropriate account requirements.
+- Select and verify an age-appropriate AI provider; add provider-specific request/response validation, quotas, cost limits, abuse controls, and usage metering.
+- Run integration, penetration, dependency, privacy, and production end-to-end tests.
 
-This is an authentication foundation, not a complete login system or security certification.
+This is an engineering foundation, not a complete authentication system, production deployment, or security certification.
