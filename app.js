@@ -530,4 +530,26 @@ document.getElementById('tool-search')?.addEventListener('input',renderToolDirec
 document.getElementById('tool-category')?.addEventListener('change',renderToolDirectory);
 renderToolDirectory();
 handlePasswordRecoveryCallback();
-if(!authConfig())setStatus('Authentication is not configured yet. Sign-in and sign-up are disabled until the public Supabase project settings are added.','error');
+
+function configurePreviewAvailability(){
+  const configured=Boolean(authConfig());
+  const notice=document.getElementById('preview-notice');
+  if(!configured){
+    notice.hidden=false;
+    document.getElementById('preview-notice-text').textContent='Preview mode: account sign-in, saved workspaces, and AI connections are unavailable until the project owner configures and tests the required services.';
+    ['signin-button','signup-button','recover-button','verify-button','create-workspace-button','refresh-workspaces-button','create-project-button','create-conversation-button','send-prompt-button'].forEach(id=>{
+      const control=document.getElementById(id);
+      if(control)control.disabled=true;
+    });
+    ['account-email','account-password','recovery-password','workspace-name','project-name','conversation-title','prompt'].forEach(id=>{
+      const control=document.getElementById(id);
+      if(control)control.disabled=true;
+    });
+    setStatus('Preview only — authentication is not configured. No account information is being submitted.','error');
+    setWorkspaceStatus('Preview only — workspace database is not connected.','error');
+    document.getElementById('history-status').textContent='Workspace storage is unavailable in this preview.';
+  }else{
+    notice.hidden=true;
+  }
+}
+configurePreviewAvailability();
