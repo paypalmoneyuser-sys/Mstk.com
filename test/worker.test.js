@@ -78,7 +78,7 @@ test("API safely accepts a small streamed body without Content-Length", async ()
     method: "POST", body: "x",
   }), env);
   assert.equal(response.status, 401);
-  assert.deepEqual(await response.json(), { error: "missing_bearer_token" });
+  assert.deepEqual(await response.json(), { error: "authentication_required" });
 });
 
 test("API rejects requests larger than one MiB", async () => {
