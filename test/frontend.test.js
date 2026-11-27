@@ -366,9 +366,9 @@ test("Pages build embeds only explicitly named public settings and validates HTT
       }
     });
     const config = await readBuiltFile(path.join(output, "mstk-config.js"), "utf8");
-    assert.match(config, /https:\\/\\/project\.example/);
+    assert.ok(config.includes('"supabaseUrl":"https://project.example"'));
     assert.match(config, /public-test-key/);
-    assert.match(config, /https:\\/\\/api\.example/);
+    assert.ok(config.includes('"apiBase":"https://api.example"'));
     await assert.rejects(
       buildPages({ outputDir: output, env: { MSTK_PUBLIC_SUPABASE_URL: "http://insecure.example" } }),
       /must be an HTTPS origin/
