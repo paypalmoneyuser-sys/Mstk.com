@@ -9,7 +9,9 @@ This branch builds on the backend scaffold and adds a protected API boundary usi
 - Supabase JWKS signature verification for ES256 and RS256 access tokens
 - Issuer, audience, role, subject, expiry, not-before, and issued-at checks
 - Strict single-origin CORS, security headers, request-size guard, fail-closed rate-limit binding
-- Supabase schema migrations and local PostgreSQL smoke tests
+- Supabase schema migrations and PostgreSQL RLS / tenant-integrity smoke tests
+- Browser UI for creating and listing workspaces, projects, conversations, and user messages through the Supabase REST API using the signed-in user's access token
+- Manual blind A/B response comparison with randomized display order and a user-selected best response; no automatic provider calls
 - Server-side `POST /api/ai/chat` adapter, disabled by default, requiring a verified user session
 - AI adapter validates HTTPS endpoint configuration, limits prompts to 12,000 characters, uses a 30-second timeout, and returns generic provider errors
 
@@ -33,13 +35,15 @@ The AI adapter remains disabled unless `MSTK_AI_ENABLED=true`. To configure one 
 ## Current limitations
 
 - AI provider connection is a generic adapter only; no provider has been selected, configured, or live-tested.
-- No signup/login UI, email verification, password recovery, logout UI, or complete session lifecycle is production-verified.
+- Account UI supports basic email/password sign-up, sign-in, sign-out, and optional protected API session verification, but live Supabase authentication is not production-verified; email recovery, durable refresh-token session handling, and complete session lifecycle remain outstanding.
+- Workspace, project, conversation, and user-message UI operations are implemented against the existing Supabase schema and rely on its RLS policies, but have not been tested against a configured live Supabase project.
+- The blind comparison tool is a manual paste-in preview; it does not invoke multiple AI providers, persist comparison results, or automatically judge answers.
 - JWT verification has not been tested against a live Supabase project or real tokens.
-- No workspace database operations, per-resource authorization, usage metering, quota enforcement, or provider-specific policy checks are implemented.
+- Live database connectivity and per-resource authorization have not been verified against a production Supabase project. Usage metering, quota enforcement, and provider-specific policy checks are not implemented.
 - No user-facing prompt retention controls; do not send sensitive personal information. Provider processing and retention terms apply.
 - The Cloudflare rate-limit binding and production frontend origin are not configured.
 - Future streaming/upload handlers must enforce actual bytes read, not only declared Content-Length.
-- No production deployment, custom domain, monitoring, or end-to-end Cloudflare test is configured.
+- No production deployment, custom domain, monitoring, or end-to-end Cloudflare test is configured. GitHub Actions is configured to run Node checks and PostgreSQL migration/RLS smoke tests for the relevant feature branches, but a passing run must be observed before claiming CI success.
 - No paid service has been enabled or purchased.
 
 Do not expose user data or provider credentials until authentication, authorization, database policies, upload controls, monitoring, and production verification are complete.
