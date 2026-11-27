@@ -57,15 +57,16 @@ async function enforceRateLimit(request, env, pathname) {
 }
 
 async function enforceRequestSize(request) {
-  if (["GET", "HEAD", "OPTIONS"].includes(request.method)) return null;
+  if (["GET", "HEAD", "OPTIONS"].includes(request.method)) return request;
   const rawLength = request.headers.get("Content-Length");
-  if (rawLength !== null && (!/^\d+$/.test(rawLength) ||
+  if (rawLength !== null && (!/^\\d+$/.test(rawLength) ||
       !Number.isSafeInteger(Number(rawLength)) || Number(rawLength) > MAX_API_BODY_BYTES)) {
     return json({ error: "request_body_too_large" }, 413);
   }
-  if (!request.body) return null;
+  if (!request.body) return request;
 
-  const reader = request.clone().body.getReader();
+  const reader = request.body.getReader();
+  const chunks = [];
   let bytesRead = 0;
   try {
     while (true) {
@@ -76,13 +77,21 @@ async function enforceRequestSize(request) {
         await reader.cancel();
         return json({ error: "request_body_too_large" }, 413);
       }
+      chunks.push(value);
     }
   } catch {
     return json({ error: "request_body_unreadable" }, 400);
   } finally {
     try { reader.releaseLock(); } catch {}
   }
-  return null;
+
+  const body = new Uint8Array(bytesRead);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new Request(request, { body });
 }
 
 function decodeBase64Url(value) {
@@ -267,10 +276,11 @@ export default {
     }
     if (!url.pathname.startsWith("/api/")) return json({ error: "not_found" }, 404, cors);
 
-    const sizeError = await enforceRequestSize(request);
-    if (sizeError) return new Response(sizeError.body, {
-      status: sizeError.status, headers: { ...Object.fromEntries(sizeError.headers), ...cors },
+    const boundedRequest = await enforceRequestSize(request);
+    if (boundedRequest instanceof Response) return new Response(boundedRequest.body, {
+      status: boundedRequest.status, headers: { ...Object.fromEntries(boundedRequest.headers), ...cors },
     });
+    request = boundedRequest;
 
     const rateLimitError = await enforceRateLimit(request, env, url.pathname);
     if (rateLimitError) return new Response(rateLimitError.body, {
