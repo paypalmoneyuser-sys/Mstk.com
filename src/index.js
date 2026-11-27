@@ -276,16 +276,18 @@ export default {
     }
     if (!url.pathname.startsWith("/api/")) return json({ error: "not_found" }, 404, cors);
 
+    // Apply the IP rate limit before reading any request body, so oversized
+    // unauthenticated requests cannot consume the body-buffering budget freely.
+    const rateLimitError = await enforceRateLimit(request, env, url.pathname);
+    if (rateLimitError) return new Response(rateLimitError.body, {
+      status: rateLimitError.status, headers: { ...Object.fromEntries(rateLimitError.headers), ...cors },
+    });
+
     const boundedRequest = await enforceRequestSize(request);
     if (boundedRequest instanceof Response) return new Response(boundedRequest.body, {
       status: boundedRequest.status, headers: { ...Object.fromEntries(boundedRequest.headers), ...cors },
     });
     request = boundedRequest;
-
-    const rateLimitError = await enforceRateLimit(request, env, url.pathname);
-    if (rateLimitError) return new Response(rateLimitError.body, {
-      status: rateLimitError.status, headers: { ...Object.fromEntries(rateLimitError.headers), ...cors },
-    });
 
     const auth = await verifySupabaseAccessToken(request, env);
     if (!auth.ok) return json({ error: auth.error }, auth.status, cors);
