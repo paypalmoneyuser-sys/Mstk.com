@@ -5,6 +5,8 @@ import vm from "node:vm";
 
 const html = await readFile(new URL("../Index.html", import.meta.url), "utf8");
 const schema = await readFile(new URL("../supabase/migrations/0001_initial_workspace_schema.sql", import.meta.url), "utf8");
+const frontendConfigTemplate = await readFile(new URL("../mstk-config.example.js", import.meta.url), "utf8");
+const gitignore = await readFile(new URL("../.gitignore", import.meta.url), "utf8");
 const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/i);
 
 test("frontend contains a parseable inline JavaScript bundle", () => {
@@ -252,4 +254,23 @@ test("a refresh completing after sign-out cannot restore the previous session", 
 
 test("refresh failure only clears the session that initiated the failed refresh", () => {
   assert.match(html, /if\(mstkSession===sessionAtStart\)\{mstkSession=null;setSignedIn\(false\);resetWorkspacePanels\(\);\}/);
+});
+
+
+test("frontend configuration template loads before the application script", () => {
+  const configScript = html.indexOf('<script src="/mstk-config.js"></script>');
+  const appScript = html.indexOf("<script>", configScript + 1);
+  assert.ok(configScript >= 0, "expected the optional local config script");
+  assert.ok(appScript > configScript, "app code must run after frontend config");
+  assert.match(frontendConfigTemplate, /window\.MSTK_CONFIG\s*=\s*Object\.freeze/);
+  assert.match(frontendConfigTemplate, /supabaseUrl:/);
+  assert.match(frontendConfigTemplate, /supabaseAnonKey:/);
+  assert.match(frontendConfigTemplate, /apiBase:/);
+});
+
+test("local frontend config is ignored by Git and example contains no real credentials", () => {
+  assert.match(gitignore, /^mstk-config\.js$/m);
+  assert.match(frontendConfigTemplate, /YOUR-PROJECT/);
+  assert.match(frontendConfigTemplate, /YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY/);
+  assert.doesNotMatch(frontendConfigTemplate, /service_role|serviceRoleKey|eyJ[A-Za-z0-9_-]{20,}/i);
 });
