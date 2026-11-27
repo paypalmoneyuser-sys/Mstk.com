@@ -1,0 +1,28 @@
+-- MSTK RLS and tenant-integrity verification checklist (manual/integration plan).
+-- Apply migrations 0001-0006 to a disposable Supabase project first.
+-- Create two authenticated users (A and B) and separate workspaces (WA and WB).
+-- Execute user-scoped checks using each user's JWT/session, not SQL editor owner role.
+
+-- Expected outcomes:
+-- 1. User A can SELECT their own profile; User B cannot SELECT or UPDATE A's profile.
+-- 2. User A can SELECT WA; User B cannot SELECT WA unless explicitly added.
+-- 3. A workspace owner can add B as role='member'; B can then read WA.
+-- 4. A regular member cannot insert/update/delete workspace_members.
+-- 5. An owner may change a member role but cannot change membership workspace_id, user_id or joined_at.
+-- 6. A regular member cannot update/delete another user's project.
+-- 7. A regular member can create and edit their own project.
+-- 8. Project/conversation workspace_id and created_by cannot be changed through ordinary UPDATE.
+-- 9. A conversation cannot reference a project in a different workspace.
+-- 10. A message cannot reference a conversation in a different workspace.
+-- 11. Repeat checks 9-10 using a trusted server/service-role write; database triggers must still reject cross-workspace references.
+-- 12. A member cannot read/insert messages for a conversation in a workspace they do not belong to.
+-- 13. A client cannot insert assistant/system messages under the authenticated grants/policies.
+-- 14. Anon role cannot read application tables.
+-- 15. Owner/admin can manage workspace projects and conversations.
+-- 16. updated_at changes after updates to profiles, workspaces, projects and conversations.
+-- 17. After A is removed from WA, A cannot delete a project/conversation A created in WA.
+-- 18. Workspace owner can still delete those records after A is removed.
+-- 19. Client roles cannot directly execute trigger-only helper functions.
+
+-- IMPORTANT: This is a manual checklist, not an automated test suite.
+-- It has NOT been executed. Run after migrations 0001-0006 in a disposable project.
