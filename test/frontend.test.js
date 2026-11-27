@@ -326,7 +326,7 @@ test("every required local frontend asset is present and optional config setup i
 });
 
 
-test("Pages build publishes only the four allowlisted static files", async () => {
+test("Pages build publishes only the five allowlisted static files", async () => {
   const { mkdtemp, readdir, readFile: readBuiltFile, rm } = await import("node:fs/promises");
   const os = await import("node:os");
   const path = await import("node:path");
