@@ -28,7 +28,7 @@ export async function buildPages({ rootDir = path.resolve(path.dirname(fileURLTo
 
   await rm(outputDir, { recursive: true, force: true });
   await mkdir(outputDir, { recursive: true });
-  await cp(path.join(rootDir, "Index.html"), path.join(outputDir, "index.html"));
+  await cp(path.join(rootDir, "index.html"), path.join(outputDir, "index.html"));
   await cp(path.join(rootDir, "app.js"), path.join(outputDir, "app.js"));
   await cp(path.join(rootDir, "styles.css"), path.join(outputDir, "styles.css"));
 
