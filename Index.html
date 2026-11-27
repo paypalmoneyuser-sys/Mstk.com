@@ -484,7 +484,8 @@ async function sendPrompt(){
   panel.append(note);response.append(panel);
   const config=authConfig();
   if(!mstkSession?.access_token||!config?.apiBase){
-    note.textContent='Sign in and configure the MSTK API URL before using the AI chat endpoint.';
+    note.textContent='Your message is saved. Configure the MSTK API URL to enable AI replies.';
+    sendButton.disabled=false;
     return;
   }
   try{
