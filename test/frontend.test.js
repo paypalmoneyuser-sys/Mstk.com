@@ -234,3 +234,22 @@ test("browser auth tokens are not persisted in web storage", () => {
   assert.doesNotMatch(scriptMatch[1], /localStorage|sessionStorage/);
   assert.match(html, /keeps the session in page memory only/);
 });
+
+
+test("session refresh is serialized so parallel protected requests cannot reuse a rotating refresh token", () => {
+  assert.match(html, /let mstkRefreshPromise=null/);
+  assert.match(html, /if\(mstkRefreshPromise\)return mstkRefreshPromise/);
+  assert.match(html, /mstkRefreshPromise=\(async\(\)=>\{/);
+  assert.match(html, /finally\{mstkRefreshPromise=null;\}/);
+});
+
+test("a refresh completing after sign-out cannot restore the previous session", () => {
+  assert.match(html, /const sessionAtStart=mstkSession/);
+  assert.match(html, /if\(mstkSession!==sessionAtStart\)return null/);
+  assert.match(html, /const sessionAtSignOut=mstkSession/);
+  assert.match(html, /authorization: 'Bearer '\+sessionAtSignOut\.access_token/);
+});
+
+test("refresh failure only clears the session that initiated the failed refresh", () => {
+  assert.match(html, /if\(mstkSession===sessionAtStart\)\{mstkSession=null;setSignedIn\(false\);resetWorkspacePanels\(\);\}/);
+});
