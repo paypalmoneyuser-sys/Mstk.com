@@ -258,3 +258,26 @@ This batch covers original-list entries #22–#25. These are preliminary officia
 - Gemini API pricing: https://ai.google.dev/gemini-api/docs/pricing
 
 **Batch result:** 4 more entries have preliminary official-source notes (22/58 unique original-list entries with some preliminary research across all batches). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Higgsfield MCP and Midjourney lack a verified authorized shared API route for the proposed use; Nano Banana is excluded under the reviewed Gemini API age/audience terms. No paid services, credits or integrations were enabled.
+
+
+## Official-source research batch 7 — 2026-11-28
+
+This batch reviews original-list entries #26–#29. These are preliminary source-backed findings only; no account, key, subscription, payment, or integration was created.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 26 | Perplexity | Consumer Terms distinguish consumer Services from API use; the consumer Terms require users to be 18+ and explicitly state that API use is governed by separate API Terms. The API Terms identify customer-controlled authorised users and API-key responsibility, but this pass did not conclusively establish the API account owner's minimum age or permission to resell/proxy access. | API is a separately governed product; current exact API pricing, quotas and India billing were not revalidated in this batch. | Keep consumer Perplexity unavailable in teen-facing MSTK. Keep API integration blocked pending direct review of current API Terms, account-owner eligibility, redistribution/competing-service rules, pricing, privacy and India access. Do not infer API eligibility from consumer rules or vice versa. |
+| 27 | Consensus | Official Terms say users must be at least 13; users below local age of majority need a parent/guardian to accept the Terms on their behalf. Official API is available to integrate research search into apps and workflows; API and MCP calls share a monthly allowance. | Free plan includes 30 calls/month with no overage. Paid plans include larger pools; additional usage on eligible paid plans is $0.05/call, and additional usage is off by default. | Potential research-search candidate, but not approved or connected. Verify developer/account eligibility, guardian authority, commercial/redistribution rights, data handling, India availability and API-specific terms before any implementation. No paid plan or overage. |
+| 28 | GitHub Copilot | Official GitHub documentation positions Copilot as coding assistance within GitHub/IDE workflows, not a general-purpose public model API for a third-party runtime workspace. | Copilot Free has a limited AI-credit allowance and 2,000 inline completions/month. Paid plans have separate prices and credit allowances; usage-based billing may apply on some plans. | Keep as a developer productivity tool only; do not proxy a personal Copilot subscription or credentials as an MSTK model endpoint. No runtime integration. |
+| 29 | Cursor | Current official Terms (last updated 2026-09-03) require users to be at least 18 or the higher local age of majority. Terms cover the Cursor platform and related tools/APIs. | Paid features and subscription pricing may apply; no pricing/quota certification was completed in this batch. | Age blocked for the current teen-facing project. Do not connect, create accounts, or attempt to bypass the minimum age. |
+
+### Official sources for batch 7
+
+- Perplexity consumer Terms and distinction from API Terms: https://www.perplexity.ai/cs/hub/legal/terms-of-service
+- Perplexity API Terms: https://www.perplexity.ai/en-GB/hub/legal/perplexity-api-terms-of-service
+- Consensus Terms: https://www.consensus.app/home/terms-of-service/
+- Consensus API guide and quotas: https://help.consensus.app/en/articles/16516328-the-consensus-api
+- GitHub Copilot plans and usage allowances: https://docs.github.com/en/copilot/get-started/plans
+- Cursor Terms (updated 2026-09-03): https://cursor.com/terms-of-service
+
+**Batch result:** 4 more entries have preliminary official-source notes (26/58 unique original-list entries with some preliminary research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Cursor is explicitly age-blocked; Perplexity consumer access is age-blocked while API eligibility remains a separate unresolved review; Consensus is a possible candidate subject to guardian and commercial/API review; Copilot remains a developer-only tool. No paid services or integrations were enabled.
