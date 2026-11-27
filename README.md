@@ -47,3 +47,22 @@ The AI adapter remains disabled unless `MSTK_AI_ENABLED=true`. To configure one 
 - No paid service has been enabled or purchased.
 
 Do not expose user data or provider credentials until authentication, authorization, database policies, upload controls, monitoring, and production verification are complete.
+
+
+## Production readiness checklist
+
+The repository is not ready for a public production launch yet. Complete and verify each item below before enabling public accounts or user data:
+
+- [ ] Choose and control the final HTTPS website hostname; set the exact `ALLOWED_ORIGIN` value.
+- [ ] Configure a Supabase project, use asymmetric ES256/RS256 signing, configure the exact allowed redirect URLs, and verify email/password sign-up, sign-in, sign-out, recovery email delivery, password reset, and token refresh end to end.
+- [ ] Apply migrations to the intended Supabase project only after reviewing a backup/rollback plan; verify RLS using separate test accounts and confirm cross-user reads/writes are denied.
+- [ ] Configure the Cloudflare Worker environment with `SUPABASE_URL`, `ALLOWED_ORIGIN`, and the `MSTK_RATE_LIMITER` binding; verify missing/failed rate limiting remains closed.
+- [ ] Configure the static frontend with only the Supabase project URL and publishable/anon key. Never expose a service-role key, signing secret, or AI provider key in browser code.
+- [ ] Add and test an appropriate Content Security Policy and other static-host response headers. The current HTML contains inline CSS and JavaScript, so choose a CSP strategy that safely supports the page (prefer nonces or hashes rather than casually allowing all inline scripts).
+- [ ] Test the full deployment over HTTPS: health, authentication, protected API, workspace isolation, password recovery, rate limiting, error handling, mobile layout, and browser refresh/sign-out behavior.
+- [ ] Set up error monitoring, uptime checks, backup/restore procedure, incident contact, privacy notice, terms, and a clear user-data retention/deletion process.
+- [ ] Decide whether AI features will be enabled. Keep them disabled until provider terms, age requirements, privacy/retention, moderation, cost limits, quota enforcement, and abuse controls are reviewed for the intended audience. Do not enable services restricted to adults for a teen-facing service.
+- [ ] Review accessibility, keyboard navigation, form labels, password-manager behavior, and browser compatibility.
+- [ ] Re-run CI on the exact release commit and record a successful result before release.
+
+Do not put passwords, OTPs, API keys, service-role keys, signing secrets, or payment details in GitHub issues, commits, or chat. Configure secrets directly in the relevant provider dashboard. No deployment, paid service, or production credential has been configured by this checklist.
