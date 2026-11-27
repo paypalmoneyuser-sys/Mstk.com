@@ -59,10 +59,8 @@ async function enforceRateLimit(request, env, pathname) {
 async function enforceRequestSize(request) {
   if (["GET", "HEAD", "OPTIONS"].includes(request.method)) return null;
   const rawLength = request.headers.get("Content-Length");
-  if (rawLength === null || !/^\\d+$/.test(rawLength)) {
-    return json({ error: "content_length_required" }, 411);
-  }
-  if (!Number.isSafeInteger(Number(rawLength)) || Number(rawLength) > MAX_API_BODY_BYTES) {
+  if (rawLength !== null && (!/^\\d+$/.test(rawLength) ||
+      !Number.isSafeInteger(Number(rawLength)) || Number(rawLength) > MAX_API_BODY_BYTES)) {
     return json({ error: "request_body_too_large" }, 413);
   }
   if (!request.body) return null;
