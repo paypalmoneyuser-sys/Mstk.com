@@ -149,3 +149,21 @@ test("workspace schema includes projects, conversations and messages with member
   assert.match(schema, /create policy messages_member_select/);
   assert.match(schema, /role = 'user'/);
 });
+
+
+test("blind comparison accepts two manual responses and hides source labels", () => {
+  for (const id of ["compare-source-a", "compare-answer-a", "compare-source-b", "compare-answer-b", "start-comparison-button", "comparison-stage", "comparison-status", "reveal-comparison-button"]) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.match(html, /Sources are hidden\. Choose the response you prefer/);
+  assert.match(html, /blindComparison=\{items:/);
+  assert.match(html, /blindComparison\.items\[0\]\.text/);
+  assert.match(html, /blindComparison\.items\[1\]\.text/);
+});
+
+test("blind comparison requires a choice before revealing provider labels", () => {
+  assert.match(html, /if\(!blindComparison\|\|blindComparison\.choice===null\)return/);
+  assert.match(html, /if\(!blindComparison\|\|blindComparison\.revealed\|\|!\[0,1\]\.includes\(index\)\)return/);
+  assert.match(html, /selected\.source/);
+  assert.match(html, /does not call AI providers or incur API charges/);
+});
