@@ -126,3 +126,25 @@ This batch adds official-source findings for #21, #28, #34 and #54. These are **
 - Replit Terms of Service (updated 2026-08-03): https://replit.com/terms-of-service
 
 **Batch result:** 4 more entries have official-source notes (8/58 researched across the first two batches). None is marked Fully audited or Successfully integrated. Google Slides is the clearest potential integration candidate, but OAuth, scope verification and privacy gates remain. Copilot and Replit are developer tools rather than MSTK runtime AI providers. Canva remains gated pending API pricing, eligibility and policy review.
+
+
+## Official-source research batch 3 — 2026-11-27
+
+This batch reviews original-list entries #8–#11. These notes are preliminary; no app has been connected or live-tested.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 8 | Real SFX Skills | The supplied name does not uniquely identify a canonical public project from the evidence located. | Unknown. | Keep blocked as identity unclear. Need the exact official URL/repository before assessing code, licence, security or runtime requirements. |
+| 9 | Arena Skill | Identified as Jakeschincariol/arena-skill, an MIT-licensed Claude Code skill. It orchestrates multiple Claude Code sub-agents; it is not an independent model API. | Skill code is free; model usage still depends on the connected AI service and may consume paid usage. | Not a runtime MSTK integration. Claude Code dependency and its age/terms requirements must be respected; do not enable it for teen-facing use unless eligibility is independently confirmed. MIT licence does not override upstream service terms. |
+| 10 | Higgsfield MAGI-2 | Official API docs describe text/image/reference-to-video endpoints, 1080p output, 4–30 second duration, and generated audio. | Official API price is USD 0.08 per second; one concurrent generation per account. | Exclude from teen-facing MSTK: API Terms require the developer and all end users to be 18+ (or higher local age of majority). No integration or paid account. |
+| 11 | Blender | Blender Foundation describes Blender as free/open-source under GPL. Its FAQ says distributed scripts using Blender Python API calls must be made available under GPL; output artwork is generally the user's copyright. | Software is free; local compute/hardware costs may apply. No hosted API quota. | Local creative workflow candidate, not a hosted AI API. Before redistribution, review GPL obligations and each add-on/model asset's separate licence; test local workflow. |
+
+### Official sources for batch 3
+
+- Arena Skill publisher repository and MIT licence: https://github.com/Jakeschincariol/arena-skill
+- Higgsfield MAGI-2 API pricing and limits: https://open.higgsfield.ai/models/sand/magi-2/text-to-video/api-reference
+- Higgsfield API Terms (18+ developer and end-user requirements): https://open.higgsfield.ai/terms-of-service
+- Blender Foundation overview and licence: https://www.blender.org/about/ and https://www.blender.org/about/license/
+- Blender FAQ on GPL and Python API scripts: https://www.blender.org/support/faq/
+
+**Batch result:** 3 of 4 entries have identifiable official-source findings; #8 remains blocked pending an exact source. No entries are fully audited or integrated. Total with batch notes: 11 of 58 original-list entries have some official-source research, not full audits.
