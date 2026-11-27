@@ -84,3 +84,23 @@ Research status is separate from implementation status. A free app does not impl
 - API documentation: https://api.openverse.org/v1/ — anonymous and registered access, rate limits, OAuth2 registration and rate-limit response headers.
 - Terms: https://docs.openverse.org/terms_of_service — prohibits scraping and rate-limit circumvention; requires respecting item licences and attribution; Openverse does not verify every item's licence; fees may apply for commercial or heavy use.
 - Individual media licences must be checked per result. Openverse is a candidate, not yet an MSTK integration.
+
+## Official-source research batch — 2026-11-27
+
+This batch adds source-backed findings for #1, #2, #6 and #11. These are **partially researched**, not fully audited: no age/legal eligibility confirmation, India/payment review, end-to-end integration test, or production approval is claimed.
+
+| # | Official-source findings | Cost / quota | Integration fit | Remaining gates |
+|---:|---|---|---|---|
+| 1 Anime.js | Official site describes a JavaScript animation engine and documents npm/CDN installation. | Core library described as 100% free; hosted API/quota is not applicable because it is a client-side library. | Good candidate for local UI animation only; no external provider connection. | Confirm exact current package licence from its canonical repository/package metadata; check dependency/security posture and test in MSTK. Age/India are not service gates for local code, but normal project/legal review remains. |
+| 2 Motion.dev | Official docs describe the Motion JavaScript/React library; Motion says the core library is MIT open source. Motion+ is a separate premium package. | Core library free. Motion+ has paid one-time and team subscription options; do not purchase. | Good candidate for local UI animation only. Premium Motion+ is not required. | Keep premium-only APIs/assets out unless separately licensed; test compatibility and bundle impact. |
+| 6 Openverse | Official API docs state anonymous and registered API access; rate limits apply, and registration uses OAuth2. | Anonymous use is available; registered users get slightly higher limits; higher limits require a request. Terms reserve possible fees for commercial/heavy usage. | Potential server-side media-search adapter; respect rate limits and return attribution/licence metadata. | Terms require legal authority to accept them; age/authority for a minor not confirmed. Verify each item's licence independently, include attribution, review privacy/data handling and India availability, then perform a safe test. |
+| 11 Blender | Blender Foundation describes Blender as free/open-source software under GPL; official licence page says user-created artwork belongs to its creator. | Blender software is free; local compute/hardware costs may apply. No hosted API quota. | Local creative tool / possible local automation workflow, not a cloud AI-provider integration. | Review GPL obligations before redistributing Blender or modified Blender; inspect each model/add-on licence separately; test local workflow and resource requirements. |
+
+### Official sources for this batch
+
+- Anime.js official site: https://animejs.com/ and installation docs: https://animejs.com/documentation/getting-started/installation
+- Motion official docs: https://motion.dev/docs/quick-start ; MIT/core and paid Motion+ distinction: https://motion.dev/docs/gsap-vs-motion and https://motion.dev/terms
+- Openverse API reference: https://api.openverse.org/v1/ ; terms: https://docs.openverse.org/terms_of_service
+- Blender Foundation overview: https://www.blender.org/about/ ; licence: https://www.blender.org/about/license/
+
+**Batch result:** 4 of 58 entries have fresh official-source notes. None of these four is yet marked fully audited or integrated. The safe near-term implementation candidates are local-only Anime.js and Motion; Openverse remains gated on terms/age review and attribution handling; Blender is a local workflow, not a hosted API.
