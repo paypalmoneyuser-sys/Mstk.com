@@ -2,7 +2,7 @@ name: Backend checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "mstk/**"]
   push:
     branches: [main, "mstk/**"]
 
