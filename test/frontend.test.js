@@ -358,6 +358,9 @@ test("Pages build publishes only the five allowlisted static files", async () =>
     assert.match(builtHtml, /src="\/app\.js"/);
     assert.match(builtHeaders, /X-Content-Type-Options: nosniff/);
     assert.match(builtHeaders, /X-Frame-Options: DENY/);
+    assert.match(builtHeaders, /Content-Security-Policy/);
+    assert.match(builtHeaders, /connect-src/);
+    assert.doesNotMatch(builtHeaders, /unsafe-inline|unsafe-eval/);
     assert.doesNotMatch(builtConfig, /service_role|serviceRoleKey|jwt_secret|OPENAI_API_KEY/i);
     assert.match(builtConfig, /"supabaseUrl":""/);
   } finally {
