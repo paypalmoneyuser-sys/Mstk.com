@@ -56,14 +56,33 @@ async function enforceRateLimit(request, env, pathname) {
   }
 }
 
-function enforceRequestSize(request) {
+async function enforceRequestSize(request) {
   if (["GET", "HEAD", "OPTIONS"].includes(request.method)) return null;
   const rawLength = request.headers.get("Content-Length");
-  if (rawLength === null || !/^\d+$/.test(rawLength)) {
+  if (rawLength === null || !/^\\d+$/.test(rawLength)) {
     return json({ error: "content_length_required" }, 411);
   }
-  if (Number(rawLength) > MAX_API_BODY_BYTES) {
+  if (!Number.isSafeInteger(Number(rawLength)) || Number(rawLength) > MAX_API_BODY_BYTES) {
     return json({ error: "request_body_too_large" }, 413);
+  }
+  if (!request.body) return null;
+
+  const reader = request.clone().body.getReader();
+  let bytesRead = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytesRead += value.byteLength;
+      if (bytesRead > MAX_API_BODY_BYTES) {
+        await reader.cancel();
+        return json({ error: "request_body_too_large" }, 413);
+      }
+    }
+  } catch {
+    return json({ error: "request_body_unreadable" }, 400);
+  } finally {
+    try { reader.releaseLock(); } catch {}
   }
   return null;
 }
@@ -250,7 +269,7 @@ export default {
     }
     if (!url.pathname.startsWith("/api/")) return json({ error: "not_found" }, 404, cors);
 
-    const sizeError = enforceRequestSize(request);
+    const sizeError = await enforceRequestSize(request);
     if (sizeError) return new Response(sizeError.body, {
       status: sizeError.status, headers: { ...Object.fromEntries(sizeError.headers), ...cors },
     });
