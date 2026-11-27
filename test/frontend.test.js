@@ -62,7 +62,7 @@ test("tool directory renders catalogue data as text rather than injecting HTML",
   assert.match(html, /title\.textContent='\#'/);
   assert.match(html, /detail\.textContent=tool\[4\]/);
   assert.match(html, /card\.append\(title,tags,detail\)/);
-  assert.match(html, /No age-check bypass is offered/);
+  assert.match(html, /Age restricted/);
 });
 
 
