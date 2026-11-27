@@ -23,12 +23,12 @@ Do not point Pages at the repository root as-is: it contains backend source and 
 A dedicated static build step is now implemented in `scripts/build-pages.js` and exposed as `npm run build:pages`. It:
 
 1. Creates a clean `dist/` output directory.
-2. Publishes only the frontend entry point (as lowercase `index.html`), `app.js`, `styles.css`, and generated public `mstk-config.js`.
+2. Publishes the lowercase `index.html`, `app.js`, `styles.css`, generated public `mstk-config.js`, and baseline `_headers` file.
 3. Copies a minimal `_headers` file with baseline security response headers. Does not copy `src/`, `supabase/`, `test/`, repository metadata, environment files, or documentation into the public output.
 4. Generates `mstk-config.js` from explicitly supplied public build variables, with safe empty/unconfigured defaults. Validate configured origins as HTTPS. Never read or serialize server-side secrets.
 5. Has automated tests that verify the output allowlist, lowercase entry point, asset references, HTTPS origin validation, and absence of secret-like configuration.
 
-The build is code-complete, but it is not yet considered verified until CI passes on the latest commit. Once verified, the intended Pages build settings are:
+The build is implemented; the latest changes still require a passing CI run before being treated as verified. Once verified, the intended Pages build settings are:
 
 - Framework preset: None
 - Build command: `npm run build:pages`
