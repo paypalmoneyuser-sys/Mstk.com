@@ -104,3 +104,25 @@ This batch adds source-backed findings for #1, #2, #6 and #11. These are **parti
 - Blender Foundation overview: https://www.blender.org/about/ ; licence: https://www.blender.org/about/license/
 
 **Batch result:** 4 of 58 entries have fresh official-source notes. None of these four is yet marked fully audited or integrated. The safe near-term implementation candidates are local-only Anime.js and Motion; Openverse remains gated on terms/age review and attribution handling; Blender is a local workflow, not a hosted API.
+
+
+## Official-source research batch 2 — 2026-11-27
+
+This batch adds official-source findings for #21, #28, #34 and #54. These are **partially researched**, not full audits or integrations. API credentials were not created and no live service was connected.
+
+| # | Official-source findings | Cost / quota | MSTK fit | Remaining gates |
+|---:|---|---|---|---|
+| 21 Google Slides | Official Slides API supports OAuth 2.0; scopes include sensitive presentation access. Google recommends narrow scopes such as `drive.file`; public apps using sensitive scopes may require verification. | Google documents no additional charge for Slides API usage. Quotas include 3,000 read requests/project/minute, 600 read requests/user/project/minute, 600 write requests/project/minute and 60 write requests/user/project/minute; 429 responses require backoff. | Strong candidate for a user-authorized document/presentation workflow, not a general AI model. | Confirm Google account/developer eligibility and guardian requirements; select minimal scopes; complete OAuth consent/app verification as applicable; review privacy and India data handling; implement/test consent and revocation. |
+| 28 GitHub Copilot | Official GitHub docs list Copilot Free, Student and paid plans. It is a coding assistant, not a general-purpose public model API for MSTK. | Copilot Free has a limited AI-credit allowance and 2,000 monthly inline completions; paid plans and usage-based billing are separate. | Useful only for developer productivity, not as a runtime AI provider inside MSTK. | Confirm account eligibility and guardian permission where required; never treat a Copilot subscription as permission to proxy its model access to MSTK users; review current terms before any workflow. |
+| 34 Canva | Official Canva API and App Developer Terms govern integrations. Developer is responsible for end-user terms, privacy and support; API use must follow published technical limits. Terms require restricting under-13 use (or local minimum consent age) or obtaining verifiable parental consent. | API pricing/quota was not established from the official terms page reviewed; do not assume Canva plan access includes free API usage. | Potential user-authorized design workflow, subject to app review and terms. | Verify API product-specific pricing/limits, developer account eligibility, privacy/data processing, India availability and whether MSTK's intended features are permitted. Do not use Canva API to build a competing Canva service. |
+| 54 Replit | Official ToS (updated 2026-08-03) says users must be at least 13; users under 18 need parent/guardian permission. It also places responsibility on users to follow service quotas and applicable privacy obligations. | Pricing page/plan quotas and any metered usage must be checked separately; ToS says purchases, subscriptions and usage fees are payable and usage fees may be billed. | Development/hosting platform, not a general AI provider integration for MSTK. | Do not enable paid/usage-based billing. Any use by a minor requires guardian permission; review current free-tier quotas and privacy obligations before use. |
+
+### Official sources for batch 2
+
+- Google Slides OAuth scopes: https://developers.google.com/workspace/slides/api/scopes
+- Google Slides quotas and pricing: https://developers.google.com/workspace/slides/api/limits
+- GitHub Copilot plans and allowances: https://docs.github.com/en/copilot/get-started/plans
+- Canva API and App Developer Terms: https://www.canva.com/policies/canva-developer-terms/
+- Replit Terms of Service (updated 2026-08-03): https://replit.com/terms-of-service
+
+**Batch result:** 4 more entries have official-source notes (8/58 researched across the first two batches). None is marked Fully audited or Successfully integrated. Google Slides is the clearest potential integration candidate, but OAuth, scope verification and privacy gates remain. Copilot and Replit are developer tools rather than MSTK runtime AI providers. Canva remains gated pending API pricing, eligibility and policy review.
