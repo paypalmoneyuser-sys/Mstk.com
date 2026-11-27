@@ -279,6 +279,6 @@ test("frontend uses delegated data-action events and contains no inline event ha
   assert.doesNotMatch(html, /\\son[a-z]+\\s*=/i);
   assert.match(html, /document\.addEventListener\('click'/);
   for (const action of ["show", "signin", "signup", "recover", "signout", "complete-recovery", "verify-session", "create-workspace", "load-workspaces", "create-project", "create-conversation", "start-comparison", "choose-response", "reveal-comparison", "send-prompt"]) {
-    assert.ok(html.includes('case \' ' + action + '\'') || html.includes('data-mstk-action="' + action + '"'), "missing action " + action);
+    assert.ok(html.includes('data-mstk-action="' + action + '"'), "missing action " + action);
   }
 });
