@@ -1,5 +1,5 @@
 -- MSTK RLS verification checklist (manual/integration test plan).
--- Run only after applying migrations 0001 and 0002 to a disposable Supabase project.
+-- Apply migrations 0001-0004 to a disposable Supabase project first.
 -- Create two authenticated users (A and B) and separate workspaces (WA and WB).
 -- Execute each statement using that user's JWT/session, not the SQL editor owner role.
 
@@ -8,24 +8,18 @@
 -- 2. User A can SELECT WA; User B cannot SELECT WA unless explicitly added to workspace_members.
 -- 3. A workspace owner can add B as role='member'; B can then read WA.
 -- 4. A regular member cannot insert/update/delete workspace_members.
--- 5. A regular member cannot update or delete another user's project.
--- 6. A regular member can create their own project and edit that project.
--- 7. A member cannot read or insert messages for a conversation in a workspace they do not belong to.
--- 8. A member cannot insert a message whose workspace_id differs from its conversation's workspace_id.
--- 9. A client cannot insert assistant/system messages under the initial authenticated grants/policies.
--- 10. Anon role cannot read any application table.
--- 11. Owner/admin can manage workspace projects and conversations.
--- 12. updated_at changes after updates to profiles, workspaces, projects and conversations.
+-- 5. A workspace owner may update a member's role, but cannot change that row's workspace_id, user_id or joined_at.
+-- 6. A regular member cannot update or delete another user's project.
+-- 7. A regular member can create their own project and edit that project.
+-- 8. A member cannot read or insert messages for a conversation in a workspace they do not belong to.
+-- 9. A member cannot insert a message whose workspace_id differs from its conversation's workspace_id.
+-- 10. A client cannot insert assistant/system messages under the initial authenticated grants/policies.
+-- 11. Anon role cannot read any application table.
+-- 12. Owner/admin can manage workspace projects and conversations.
+-- 13. updated_at changes after updates to profiles, workspaces, projects and conversations.
+-- 14. After A is removed from WA, A cannot delete a project or conversation A created in WA.
+-- 15. Workspace owner can still delete those records after A is removed.
 
 -- IMPORTANT: Tests are NOT automated by this checklist and have NOT been executed.
 -- Use real separate sessions/JWTs or Supabase's supported RLS test harness.
-
-
--- Additional required case for migration 0003:
--- 1. User A creates a project and a conversation in Workspace W.
--- 2. Workspace owner removes User A from workspace_members.
--- 3. As User A's authenticated JWT, attempt to delete the project and conversation.
--- Expected: both deletes affect zero rows / are denied by RLS.
--- 4. As workspace owner, delete the same records.
--- Expected: owner delete succeeds.
--- Run these checks in a disposable Supabase project after applying migrations 0001-0003.
+-- Run the checks only after migrations 0001-0004 in a disposable project.
