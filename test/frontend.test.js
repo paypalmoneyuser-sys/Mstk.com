@@ -335,13 +335,16 @@ test("Pages build publishes only the four allowlisted static files", async () =>
   const output = path.join(temp, "dist");
   try {
     const result = await buildPages({ outputDir: output, env: {} });
-    assert.deepEqual((await readdir(output)).sort(), ["app.js", "index.html", "mstk-config.js", "styles.css"]);
-    assert.deepEqual(result.files, ["index.html", "app.js", "styles.css", "mstk-config.js"]);
+    assert.deepEqual((await readdir(output)).sort(), ["_headers", "app.js", "index.html", "mstk-config.js", "styles.css"]);
+    assert.deepEqual(result.files, ["index.html", "_headers", "app.js", "styles.css", "mstk-config.js"]);
     const builtHtml = await readBuiltFile(path.join(output, "index.html"), "utf8");
     const builtConfig = await readBuiltFile(path.join(output, "mstk-config.js"), "utf8");
+    const builtHeaders = await readBuiltFile(path.join(output, "_headers"), "utf8");
     assert.match(builtHtml, /href="\/styles\.css"/);
     assert.match(builtHtml, /src="\/mstk-config\.js"/);
     assert.match(builtHtml, /src="\/app\.js"/);
+    assert.match(builtHeaders, /X-Content-Type-Options: nosniff/);
+    assert.match(builtHeaders, /X-Frame-Options: DENY/);
     assert.doesNotMatch(builtConfig, /service_role|serviceRoleKey|jwt_secret|OPENAI_API_KEY/i);
     assert.match(builtConfig, /"supabaseUrl":""/);
   } finally {
