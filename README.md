@@ -8,7 +8,7 @@ This branch builds on the backend scaffold and adds a protected API boundary usi
 - Public `GET /api/health`; protected `GET /api/me`
 - Supabase JWKS signature verification for ES256 and RS256 access tokens
 - Issuer, audience, role, subject, expiry, not-before, and issued-at checks
-- Strict single-origin CORS, security headers, actual streamed request-body enforcement (1 MiB cap), fail-closed rate-limit binding
+- Strict single-origin CORS, API security headers including HSTS, actual streamed request-body enforcement (1 MiB cap), fail-closed rate-limit binding
 - Supabase schema migrations and PostgreSQL RLS / tenant-integrity smoke tests
 - Browser UI for creating and listing workspaces, projects, conversations, and user messages through the Supabase REST API using the signed-in user's access token
 - Manual blind A/B response comparison with randomized display order and a user-selected best response; no automatic provider calls
