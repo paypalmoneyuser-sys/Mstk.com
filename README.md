@@ -15,6 +15,10 @@ This branch builds on the backend scaffold and adds a protected API boundary usi
 - Server-side `POST /api/ai/chat` adapter, disabled by default, requiring a verified user session
 - AI adapter validates HTTPS endpoint configuration, limits prompts to 12,000 characters, uses a 30-second timeout, and returns generic provider errors
 
+## Frontend configuration
+
+For local hosting, copy `mstk-config.example.js` to `mstk-config.js` and fill in the Supabase project's HTTPS URL and its public publishable/anon key. The page loads `/mstk-config.js` before its application code. The real local config file is ignored by Git and must not be committed. If the API Worker is deployed on a separate origin, set `apiBase` to that exact HTTPS origin. These values are public browser configuration; never use a service-role key, signing secret, password, or provider API key here. This template does not create or configure a Supabase project.
+
 ## Local checks
 
 Requires Node.js 20 or newer.
