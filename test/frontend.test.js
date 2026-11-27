@@ -304,5 +304,5 @@ test("frontend remains compatible with a strict external-asset CSP", () => {
   assert.ok(scriptTags.every((tag) => /\bsrc\s*=/.test(tag[1])));
   assert.match(frontendSecurity, /script-src 'self'/);
   assert.match(frontendSecurity, /style-src 'self'/);
-  assert.doesNotMatch(frontendSecurity, /(?:script-src|style-src)[^;\\n]*(?:unsafe-inline|unsafe-eval)/);
+  assert.doesNotMatch(frontendSecurity, /(?:script-src|style-src)[^;\n]*(?:unsafe-inline|unsafe-eval)/);
 });
