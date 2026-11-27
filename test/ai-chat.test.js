@@ -33,10 +33,10 @@ async function invoke(name, prompt, options = {}) {
     const body = JSON.stringify({ prompt });
     const response = await worker.fetch(new Request("https://api.example/api/ai/chat", {
       method: "POST",
-      headers: { authorization: "Bearer " + s.token, "content-type": "application/json", "content-length": String(Buffer.byteLength(body)) },
+      headers: { authorization: "Bearer " + s.token, "content-type": "application/json", "content-length": String(Buffer.byteLength(body)), Origin: "https://mstk.example" },
       body,
     }), {
-      MSTK_RATE_LIMITER: limiter, SUPABASE_URL: s.project, MSTK_AI_ENABLED: options.enabled ?? "true",
+      MSTK_RATE_LIMITER: limiter, ALLOWED_ORIGIN: "https://mstk.example", SUPABASE_URL: s.project, MSTK_AI_ENABLED: options.enabled ?? "true",
       MSTK_AI_CHAT_COMPLETIONS_URL: options.url ?? "https://provider.example/v1/chat/completions",
       MSTK_AI_API_KEY: "test-only-secret", MSTK_AI_MODEL: "mock-model",
     });
@@ -54,6 +54,7 @@ test("AI chat is disabled by default", async () => {
 test("AI chat calls configured provider and returns its answer", async () => {
   const { response, calls } = await invoke("mstk-ai-success-test", "Explain photosynthesis");
   assert.equal(response.status, 200);
+  assert.equal(response.headers.get("access-control-allow-origin"), "https://mstk.example");
   assert.deepEqual(await response.json(), { answer: "Mock provider answer", model: "mock-model" });
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, "https://provider.example/v1/chat/completions");
