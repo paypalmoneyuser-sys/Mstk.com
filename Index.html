@@ -160,7 +160,7 @@ async function verifySession(){
   if(!mstkSession?.access_token)return;
   const config=authConfig();
   try{
-    const response=await fetch(config.base.replace(/\/$/,'')+'/../api/me',{headers:{authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
+    const response=await fetch(new URL('/api/me',config.base).toString(),{headers:{authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
     if(!response.ok)throw new Error('MSTK API verification failed (HTTP '+response.status+').');
     const data=await response.json();
     setStatus('MSTK API verified this session. User ID: '+data.user.id,'good');
