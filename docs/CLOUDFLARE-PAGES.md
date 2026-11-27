@@ -28,14 +28,14 @@ A dedicated static build step is now implemented in `scripts/build-pages.js` and
 4. Generates `mstk-config.js` from explicitly supplied public build variables, with safe empty/unconfigured defaults. Validate configured origins as HTTPS. Never read or serialize server-side secrets.
 5. Has automated tests that verify the output allowlist, lowercase entry point, asset references, HTTPS origin validation, and absence of secret-like configuration.
 
-The build is implemented; the latest changes still require a passing CI run before being treated as verified. Once verified, the intended Pages build settings are:
+The build is implemented and verified by GitHub Actions on commit `146afe87b6ef995f8d45fa7597c83dcf58750952`: Node tests, syntax checks, PostgreSQL migrations, RLS smoke tests, and the static Pages build all passed. This verifies the build pipeline, not a live deployment. The intended Pages build settings are:
 
 - Framework preset: None
 - Build command: `npm run build:pages`
 - Build output directory: `dist`
 - Root directory: repository root
 
-These are intended settings; they are not active yet because no Pages project has been configured or deployed.
+These are intended settings; they are not active yet because no Pages project has been configured or deployed. With the current empty public configuration, the result is a static preview only: sign-in, workspace database access, and AI provider calls remain unavailable.
 
 ## Public build variables
 
