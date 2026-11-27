@@ -286,9 +286,9 @@ test("frontend uses delegated data-action events and contains no inline event ha
 });
 
 test("frontend CSS and application JavaScript are external assets", () => {
-  assert.match(html, /<link rel="stylesheet" href="\\/styles\\.css">/);
-  assert.equal((html.match(/<style\\b/gi) || []).length, 0);
-  assert.equal((html.match(/<script>(?!\\s*src)/gi) || []).length, 0);
+  assert.match(html, /<link rel="stylesheet" href="\/styles\.css">/);
+  assert.equal((html.match(/<style\b/gi) || []).length, 0);
+  assert.equal((html.match(/<script>(?!\s*src)/gi) || []).length, 0);
   assert.ok(css.includes("body{"));
   assert.ok(css.includes(".panel{"));
 });
