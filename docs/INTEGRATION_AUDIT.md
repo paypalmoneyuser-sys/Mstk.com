@@ -474,3 +474,22 @@ This batch reviews original-list entries #54–#57. Findings are preliminary off
 - Tripo AI official website: https://www.tripo3d.ai/
 
 **Batch result:** 4 more original-list entries have preliminary notes (54/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Replit remains a developer workflow only; Saner.AI is unidentified at API level; Jasper requires separate commercial API and contract review; Tripo requires API-credit, output-rights and sandbox review. No accounts, paid services, credits, or integrations were enabled.
+
+
+## Official-source research batch 15 — 2026-11-28
+
+This batch reviews original-list entry #58, Kling AI. Findings are preliminary official-source notes, not a full audit or live integration test. No account, API key, subscription, credit purchase, payment, or integration was created.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 58 | Kling AI | Official consumer Terms last updated 2026-04-21 state that users below 13 or the higher local minimum age may not use the service; users below the age of majority may only register/use it through parent or legal-guardian representation, and India-specific conditions apply. Separate paid API Terms also require guardian representation for minors and bind API use to the API terms, consumer terms, privacy policy, SLA and product-specific rules. The official API quick start requires a Kling account, API key and prepaid resource-package purchase; usage and balance can be monitored in the developer console. | API is paid and prepaid/resource-package based. Official pricing currently shows paid packages (including a listed $500 standard package); this is not a free integration. Actual unit deductions vary by model and generation duration and must be checked in the live pricing page before any future adult-owned deployment. | Do not create an account, API key or purchase credits for the minor project owner. Keep disabled in the current teen-facing MSTK release. A future eligible adult/organisation would need to accept the API contract, obtain written confirmation of commercial embedding/redistribution rights, verify India-specific compliance, age and end-user rules, pricing and refund terms, content moderation, generated-content rights, privacy/retention, and strict tenant-level spend caps before reconsideration. |
+
+### Official sources for batch 15
+
+- Kling AI Terms of Service (updated 2026-04-21): https://kling.ai/docs/user-policy
+- Kling AI API Paid Service Terms (effective 2026-04-21): https://kling.ai/document-api/protocols/paidServiceProtocol
+- Kling AI API Quick Start and prepaid resource packages: https://kling.ai/document-api/guides/get-started/quick-start
+- Kling AI API pricing: https://kling.ai/dev/pricing?scrollTo=video-package
+- Kling AI API updates (2026-10-28 Kling 4.0 API availability): https://kling.ai/document-api/updates/api
+
+**Batch result:** The original 58-entry list now has preliminary official-source notes for 55/58 unique entries (the #54–#57 batch added four entries and this batch adds #58). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Kling is age/contract gated for minors and paid; no API access, credit purchase, or integration was enabled. The remaining entries without even preliminary notes are #1–#3 and #5–#? Check the complete original list mapping before claiming a specific remaining set; the cumulative count reflects 55 unique entries only.
