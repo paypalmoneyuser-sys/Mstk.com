@@ -178,3 +178,20 @@ test("blind comparison reveals and displays the selected best response", () => {
   assert.match(html, /best-result'\)\.hidden=false/);
   assert.match(html, /best-result'\)\.hidden=true/);
 });
+
+
+test("Supabase session expiry is tracked and refreshed before protected requests", () => {
+  assert.match(html, /function trackSessionExpiry\(session\)/);
+  assert.match(html, /session\._mstkExpiresAt=Date\.now\(\)\+Math\.max\(0,Number\(session\.expires_in\)\)\*1000/);
+  assert.match(html, /function refreshSessionIfNeeded\(\)/);
+  assert.match(html, /token\?grant_type=refresh_token/);
+  assert.match(html, /refresh_token:mstkSession\.refresh_token/);
+  assert.match(html, /await refreshSessionIfNeeded\(\);\s*const headers=\{apikey:config\.key,authorization:'Bearer '\+mstkSession\.access_token/);
+  assert.match(html, /await refreshSessionIfNeeded\(\);\s*if\(!config\.apiBase\)/);
+});
+
+test("failed Supabase refresh clears the in-memory session and asks the user to sign in", () => {
+  assert.match(html, /Your sign-in session could not be refreshed\. Please sign in again\./);
+  assert.match(html, /mstkSession=null;setSignedIn\(false\);resetWorkspacePanels\(\)/);
+  assert.match(html, /Your sign-in session expired\. Please sign in again\./);
+});
