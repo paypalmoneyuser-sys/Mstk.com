@@ -11,7 +11,7 @@ Because account and service terms may impose age and contracting requirements, a
 ## Repository facts that affect deployment
 
 - The static frontend currently lives at the repository root alongside backend code, migrations, tests, and documentation.
-- The HTML entry point is named `index.html` with a capital I. Static hosts conventionally expect a lowercase `index.html` for the root page.
+- The HTML entry point is named lowercase `index.html` for the root page.
 - The backend is a separate Cloudflare Worker described by `wrangler.toml`; Pages static hosting does not deploy that Worker automatically.
 - `mstk-config.js` is intentionally local-only and ignored by Git. Only the Supabase project URL, publishable/anon key, and optional API origin belong in browser configuration. Never put service-role keys, signing secrets, passwords, or provider API keys in the static site.
 - The application has not been verified against a live Supabase project or a deployed Worker.
@@ -24,7 +24,7 @@ A dedicated static build step is now implemented in `scripts/build-pages.js` and
 
 1. Creates a clean `dist/` output directory.
 2. Publishes only the frontend entry point (as lowercase `index.html`), `app.js`, `styles.css`, and generated public `mstk-config.js`.
-3. Does not copy `src/`, `supabase/`, `test/`, repository metadata, environment files, or documentation into the public output.
+3. Copies a minimal `_headers` file with baseline security response headers. Does not copy `src/`, `supabase/`, `test/`, repository metadata, environment files, or documentation into the public output.
 4. Generates `mstk-config.js` from explicitly supplied public build variables, with safe empty/unconfigured defaults. Validate configured origins as HTTPS. Never read or serialize server-side secrets.
 5. Has automated tests that verify the output allowlist, lowercase entry point, asset references, HTTPS origin validation, and absence of secret-like configuration.
 
@@ -35,7 +35,7 @@ The build is code-complete, but it is not yet considered verified until CI passe
 - Build output directory: `dist`
 - Root directory: repository root
 
-These are intended settings; they are not active yet because the build step has not been added.
+These are intended settings; they are not active yet because no Pages project has been configured or deployed.
 
 ## Public build variables
 
