@@ -75,6 +75,11 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 .comparison-card{background:#242538;border:1px solid #37394e;border-radius:12px;padding:14px;min-width:0}
 .comparison-card h4{color:#e5ddff;margin:0 0 10px}
 .comparison-card p{white-space:pre-wrap;overflow-wrap:anywhere;max-height:360px;overflow:auto;line-height:1.5;font-size:14px}
+
+.best-result{margin-top:14px;padding:14px;border:1px solid #6552a3;border-radius:12px;background:#24213a}
+.best-result h4{margin:0 0 8px;color:#d9ccff}
+#best-result-source{font-size:12px;color:#c4b5fd}
+#best-result-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
 </style>
 </head>
 <body>
@@ -194,6 +199,7 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 </div>
 <p id="comparison-status" class="status" role="status" aria-live="polite">Choose the response you prefer.</p>
 <button class="action secondary" id="reveal-comparison-button" onclick="revealBlindComparison()" disabled>Reveal sources</button>
+<div id="best-result" class="best-result" hidden aria-live="polite"><h4>Selected best response</h4><p id="best-result-source"></p><p id="best-result-text"></p></div>
 </div>
 </div>
 <div class="panel">
@@ -357,6 +363,9 @@ function startBlindComparison(){
   document.getElementById('blind-text-one').textContent=blindComparison.items[0].text;
   document.getElementById('blind-text-two').textContent=blindComparison.items[1].text;
   document.getElementById('comparison-stage').hidden=false;
+  document.getElementById('best-result').hidden=true;
+  document.getElementById('best-result-source').textContent='';
+  document.getElementById('best-result-text').textContent='';
   document.getElementById('reveal-comparison-button').disabled=true;
   status.textContent='Sources are hidden. Choose the response you prefer.';
   status.className='status';
@@ -372,6 +381,9 @@ function revealBlindComparison(){
   blindComparison.revealed=true;
   const selected=blindComparison.items[blindComparison.choice];
   document.getElementById('comparison-status').textContent='Your choice: '+(blindComparison.choice===0?'A':'B')+' · Source: '+selected.source+'. A: '+blindComparison.items[0].source+' · B: '+blindComparison.items[1].source+'.';
+  document.getElementById('best-result-source').textContent='Winning source: '+selected.source;
+  document.getElementById('best-result-text').textContent=selected.text;
+  document.getElementById('best-result').hidden=false;
   document.getElementById('reveal-comparison-button').disabled=true;
 }
 function setWorkspaceStatus(message,kind=''){
