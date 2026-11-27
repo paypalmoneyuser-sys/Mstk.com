@@ -30,6 +30,19 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .status.good{border:1px solid #398b66}
 .hidden{display:none!important}
 @media(max-width:600px){.layout{display:block}nav{width:100%;display:flex;overflow-x:auto}nav button{min-width:115px}main{padding:16px}}
+
+.directory-controls{display:grid;grid-template-columns:1fr;gap:4px;max-width:520px;margin:18px 0}
+.directory-controls input,.directory-controls select{width:100%;background:#10111b;color:white;border:1px solid #555;padding:12px;border-radius:10px;margin:4px 0 12px}
+.tool-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px}
+.tool-card{background:#242538;border:1px solid #37394e;border-radius:12px;padding:14px;min-width:0}
+.tool-card h4{margin:0 0 8px;color:#e5ddff;font-size:16px}
+.tool-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.tool-tag{font-size:11px;border-radius:20px;padding:4px 8px;background:#393b52;color:#e6e7f0}
+.tool-tag.restricted{background:#542d3a;color:#ffd7df}
+.tool-tag.candidate{background:#23483d;color:#c7f5df}
+.tool-tag.pending{background:#4b4128;color:#f8e7b3}
+.tool-card p{font-size:13px;color:#b9bdd0;line-height:1.45;margin:7px 0 0}
+@media(max-width:600px){.tool-list{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -81,7 +94,30 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <section id="video" class="page"><h1>Video Studio</h1><div class="panel"><h3>Create Videos</h3><textarea placeholder="Describe your video..."></textarea><p class="note">Video generation integration pending.</p></div></section>
 <section id="audio" class="page"><h1>Audio Studio</h1><div class="panel"><h3>Audio Workspace</h3><textarea placeholder="Describe your audio task..."></textarea><p class="note">Audio integration pending.</p></div></section>
 <section id="development" class="page"><h1>Development Studio</h1><div class="panel"><h3>Developer Workspace</h3><p>Organise your development projects here.</p></div></section>
-<section id="tools" class="page"><h1>AI Tool Directory</h1><div class="panel"><h3>Integration catalogue</h3><p>Tool integrations are being reviewed before they are listed here.</p><p class="note">A tool will appear as available only after its age requirements, terms of service, pricing, privacy, API access, and MSTK compatibility have been checked. A directory listing does not mean that an integration is connected or free.</p><p class="note">No external AI provider is currently connected.</p></div></section>
+<section id="tools" class="page">
+<h1>AI Tool Directory</h1>
+<div class="panel">
+<h3>Original 58-tool catalogue</h3>
+<p class="note">Browse the tools from the original MSTK list. These are catalogue entries, not live integrations. No external provider is currently connected.</p>
+<div class="directory-controls">
+<label for="tool-search">Search tools</label>
+<input id="tool-search" type="search" placeholder="Search by tool name or status..." autocomplete="off">
+<label for="tool-category">Category</label>
+<select id="tool-category">
+<option value="all">All categories</option>
+<option value="Development">Development</option>
+<option value="AI assistants">AI assistants</option>
+<option value="Image & design">Image &amp; design</option>
+<option value="Video & audio">Video &amp; audio</option>
+<option value="Productivity">Productivity</option>
+<option value="Infrastructure">Infrastructure</option>
+</select>
+<p id="tool-count" class="note" aria-live="polite">Loading catalogue…</p>
+</div>
+<div id="tool-list" class="tool-list" aria-live="polite"></div>
+<p class="note">Availability labels reflect preliminary review only. A tool is not marked connected or approved until its terms, age eligibility, cost, privacy, API access and safe integration tests are complete. 18+ or otherwise age-restricted services remain unavailable to under-18 users; no age-check bypass is offered.</p>
+</div>
+</section>
 </main>
 </div>
 <script>
@@ -213,6 +249,94 @@ async function sendPrompt(){
     note.classList.add('error');
   }
 }
+
+const MSTK_TOOLS = [
+[1,"Anime.js","Development","Local library candidate","Local animation library; not yet tested."],
+[2,"Motion.dev","Development","Local library candidate","Core motion library candidate; premium features are not required."],
+[3,"Kokonut UI","Development","Terms review pending","Core licence and current Pro terms need verification."],
+[4,"Bklit UI","Development","Terms review pending","Core licence and Studio terms need verification."],
+[5,"Manus","AI assistants","Age restricted","Reported 18+ eligibility; unavailable for under-18 use."],
+[6,"Openverse","Image & design","Review pending","Potential media search; item licences and attribution must be checked."],
+[7,"Earshot","Video & audio","Identity unclear","Exact product identity and public API are unconfirmed."],
+[8,"Real SFX Skills","Video & audio","Identity unclear","Exact source/repository is needed before code and licence review."],
+[9,"Arena Skill","Development","Age restricted","Claude Code dependency; not a standalone model API."],
+[10,"Higgsfield MAGI-2","Video & audio","Age restricted","Provider API terms require adult developers and end users."],
+[11,"Blender","Image & design","Local workflow candidate","Free local creative software; model and add-on licences vary."],
+[12,"Claude","AI assistants","Age restricted","Consumer service terms require users to be 18+."],
+[13,"ChatGPT / OpenAI","AI assistants","Eligibility review pending","Consumer and API access are separate; teen-facing API safeguards and approvals are required."],
+[14,"Gemini","AI assistants","Age restricted","Reviewed Gemini API terms restrict under-18 access and teen-directed API clients."],
+[15,"Seedance","Video & audio","Eligibility and cost review","Age eligibility is unresolved and documented activation requires paid funding."],
+[16,"Google Flow","Video & audio","Age restricted","Reported 18+ eligibility."],
+[17,"Claude (duplicate)","AI assistants","Duplicate entry","Duplicate of original entry #12; retained for list traceability."],
+[18,"Grok","AI assistants","API age restricted","xAI API users must be 18+; consumer access is separate."],
+[19,"Meta Muse Spark","AI assistants","Age restricted","Meta Model API terms require adult developers and end users."],
+[20,"Claude Design","Image & design","Age restricted","Consumer product with 18+ terms; no separate public API established."],
+[21,"Google Slides","Productivity","Integration candidate","OAuth and privacy review required; not connected."],
+[22,"Fable 5.2","AI assistants","Eligibility and cost review","Model identity found; adult account, retention and cost controls remain unverified."],
+[23,"Higgsfield MCP","Video & audio","Age restricted","Account-connected workflow; adult eligibility and provider terms block current use."],
+[24,"Midjourney","Image & design","No supported API found","No official public API established in the reviewed sources."],
+[25,"Nano Banana","Image & design","Age restricted","Gemini API age and audience terms apply."],
+[26,"Perplexity","AI assistants","Age restricted","Consumer service reported 18+; API eligibility needs separate review."],
+[27,"Consensus","Productivity","Terms review pending","API allowance, age rules and service terms need rechecking."],
+[28,"GitHub Copilot","Development","Developer workflow only","Coding assistant; not a general-purpose MSTK model API."],
+[29,"Cursor","Development","Age restricted","Reported 18+ eligibility."],
+[30,"Runway ML","Video & audio","Terms review pending","API credits, age eligibility and redistribution terms need confirmation."],
+[31,"Stable Diffusion","Image & design","Local/model review","Model licences differ; hosted use remains blocked pending terms."],
+[32,"Adobe Firefly","Image & design","Terms review pending","Age, guardian and API-specific terms need confirmation."],
+[33,"Hailuo AI","Video & audio","Terms review pending","Minimum age and regional/API terms need confirmation."],
+[34,"Canva","Image & design","Integration candidate","API pricing, eligibility, privacy and app review remain open."],
+[35,"Lovart","Image & design","Terms review pending","Public API and eligibility conditions need confirmation."],
+[36,"CapCut","Video & audio","Manual workflow only","No general public editing API confirmed."],
+[37,"Instagram Edits","Video & audio","Manual workflow only","No public developer editing API confirmed."],
+[38,"Maestro Video Generator","Video & audio","Identity unclear","Exact product identity is unresolved."],
+[39,"DeepSeek Harness","Development","Security review pending","Experimental harness; sandboxing and upstream model terms required."],
+[40,"Headroom","Productivity","Identity unclear","Multiple unrelated products use this name."],
+[41,"Claude-Mem","Development","Age restricted","Depends on Claude Code and its upstream age restrictions."],
+[42,"Anthropic free Claude Code setup","Development","Age restricted","Claude Code is not a free Claude API; upstream 18+ terms apply."],
+[43,"Task Observer","Development","Age restricted","Claude Code plugin; upstream age restrictions apply."],
+[44,"OmniRoute","Infrastructure","Security review pending","Self-hosted gateway; each upstream provider's terms and costs still apply."],
+[45,"Poe","AI assistants","Terms review pending","Consumer points and bot/API costs differ; age conditions need review."],
+[46,"Ollama","Infrastructure","Local workflow candidate","Local model runner; models have separate licences and local hardware costs."],
+[47,"Kixi.ai","AI assistants","Identity unclear","Exact product identity is not verified."],
+[48,"Flashloop","Image & design","Terms review pending","Credits, age eligibility and generation terms need confirmation."],
+[49,"Artflow.ai","Image & design","Terms review pending","API access, privacy and regional age rules need confirmation."],
+[50,"ElevenLabs","Video & audio","Age restricted","Minor-directed use requires provider approval; voice cloning remains disabled."],
+[51,"Fish Audio","Video & audio","Terms review pending","Guardian, voice-cloning consent and API terms need review."],
+[52,"Everygen.ai","Image & design","Age restricted","Reported 18+ terms."],
+[53,"ClipFlux.ai","Video & audio","Terms review pending","Paid credits, age and redistribution terms need confirmation."],
+[54,"Replit","Development","Developer workflow only","Development platform; under-18 use requires guardian permission under reviewed terms."],
+[55,"Saner.AI","Productivity","API review pending","Public API is unconfirmed; external keys may add costs."],
+[56,"Jasper","Productivity","Terms and cost review","Business API pricing and regional age terms need confirmation."],
+[57,"Tripo AI","Image & design","Terms review pending","API is separately paid; commercial and attribution restrictions apply."],
+[58,"Kling AI","Video & audio","Terms review pending","API packages, redistribution, automation and regional terms need confirmation."]
+];
+function renderToolDirectory(){
+  const list=document.getElementById('tool-list');
+  if(!list)return;
+  const query=(document.getElementById('tool-search').value||'').trim().toLowerCase();
+  const category=document.getElementById('tool-category').value;
+  const matches=MSTK_TOOLS.filter(tool=>(category==='all'||tool[2]===category)&&tool.join(' ').toLowerCase().includes(query));
+  document.getElementById('tool-count').textContent='Showing '+matches.length+' of '+MSTK_TOOLS.length+' catalogue entries · 0 connected';
+  list.replaceChildren();
+  for(const tool of matches){
+    const card=document.createElement('article');card.className='tool-card';
+    const title=document.createElement('h4');title.textContent='#'+tool[0]+' · '+tool[1];
+    const tags=document.createElement('div');tags.className='tool-meta';
+    const categoryTag=document.createElement('span');categoryTag.className='tool-tag';categoryTag.textContent=tool[2];
+    const statusTag=document.createElement('span');statusTag.className='tool-tag';
+    statusTag.textContent=tool[3];
+    if(/Age restricted|API age restricted/.test(tool[3]))statusTag.classList.add('restricted');
+    else if(/candidate/.test(tool[3]))statusTag.classList.add('candidate');
+    else statusTag.classList.add('pending');
+    const detail=document.createElement('p');detail.textContent=tool[4];
+    tags.append(categoryTag,statusTag);card.append(title,tags,detail);list.append(card);
+  }
+  if(matches.length===0){const empty=document.createElement('p');empty.className='note';empty.textContent='No tools match this search.';list.append(empty);}
+}
+
+document.getElementById('tool-search')?.addEventListener('input',renderToolDirectory);
+document.getElementById('tool-category')?.addEventListener('change',renderToolDirectory);
+renderToolDirectory();
 if(!authConfig())setStatus('Authentication is not configured yet. Sign-in and sign-up are disabled until the public Supabase project settings are added.','error');
 </script>
 </body>
