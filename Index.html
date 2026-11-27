@@ -1,9 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MSTK — an AI workspace preview.">
 <title>MSTK.COM - AI Workspace</title>
 <style>
 *{box-sizing:border-box}
@@ -17,25 +17,27 @@ nav button:hover{background:#5942a5}
 main{padding:25px;flex:1;min-width:0}
 h1{color:#c4b5fd}
 .panel{background:#1b1d2c;padding:20px;border-radius:15px;margin-top:20px}
-textarea{width:100%;height:110px;background:#10111b;color:white;border:1px solid #444;padding:12px;border-radius:10px}
-button.send{background:#8b5cf6;color:white;padding:12px 20px;border:0;border-radius:9px;margin-top:10px;cursor:pointer}
+textarea,input{width:100%;background:#10111b;color:white;border:1px solid #555;padding:12px;border-radius:10px;margin:7px 0 14px}
+textarea{height:110px}
+label{display:block;color:#d7d9e4;font-size:14px}
+button.action{background:#8b5cf6;color:white;padding:12px 20px;border:0;border-radius:9px;margin:5px 8px 5px 0;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
 .page{display:none}
 .page.active{display:block}
-.note{color:#aab0c4;font-size:13px}
-@media(max-width:600px){
-.layout{display:block}
-nav{width:100%;display:flex;overflow-x:auto}
-nav button{min-width:115px}
-main{padding:16px}
-}
+.note{color:#aab0c4;font-size:13px;line-height:1.5}
+.status{padding:12px;border-radius:9px;background:#242538;margin-top:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.status.error{border:1px solid #b45353}
+.status.good{border:1px solid #398b66}
+.hidden{display:none!important}
+@media(max-width:600px){.layout{display:block}nav{width:100%;display:flex;overflow-x:auto}nav button{min-width:115px}main{padding:16px}}
 </style>
 </head>
 <body>
 <header>MSTK<span>.COM</span></header>
-
 <div class="layout">
-<nav>
+<nav aria-label="Main navigation">
 <button onclick="show('home')">Home</button>
+<button onclick="show('account')">Account</button>
 <button onclick="show('workspace')">AI Workspace</button>
 <button onclick="show('image')">Image Studio</button>
 <button onclick="show('video')">Video Studio</button>
@@ -43,94 +45,152 @@ main{padding:16px}
 <button onclick="show('development')">Development</button>
 <button onclick="show('tools')">Tool Directory</button>
 </nav>
-
 <main>
 <section id="home" class="page active">
 <h1>Welcome to MSTK</h1>
 <p>Your all-in-one AI workspace.</p>
+<div class="panel"><h2>One Space. Many AI Tools.</h2><p>Chat, Research, Create and Develop.</p><p class="note">MSTK.COM First Preview</p></div>
+</section>
+
+<section id="account" class="page">
+<h1>Account</h1>
 <div class="panel">
-<h2>One Space. Many AI Tools.</h2>
-<p>Chat, Research, Create and Develop.</p>
-<p class="note">MSTK.COM First Preview</p>
+<h2 id="account-heading">Sign in or create an account</h2>
+<p class="note">Authentication uses your configured Supabase project. Do not share your password or verification codes with anyone.</p>
+<label for="account-email">Email</label>
+<input id="account-email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com">
+<label for="account-password">Password</label>
+<input id="account-password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="At least 8 characters">
+<div>
+<button class="action" id="signin-button" onclick="authenticate('signin')">Sign in</button>
+<button class="action" id="signup-button" onclick="authenticate('signup')">Create account</button>
+<button class="action hidden" id="signout-button" onclick="signOut()">Sign out</button>
+</div>
+<div id="account-status" class="status" role="status" aria-live="polite">Authentication is not configured yet.</div>
+<p class="note">For users under 18, use the service only where its age rules allow and with parent/guardian permission when required. Email confirmation may be required. This preview keeps the session in page memory only; refreshing the page signs you out.</p>
+</div>
+<div class="panel">
+<h3>Connection check</h3>
+<button class="action" id="verify-button" onclick="verifySession()" disabled>Verify API session</button>
+<p class="note">Checks the protected MSTK API endpoint after a successful sign-in. It does not access your private workspace data.</p>
 </div>
 </section>
 
-<section id="workspace" class="page">
-<h1>AI Workspace</h1>
-<div class="panel">
-<h3>New Conversation</h3>
-<textarea id="prompt" placeholder="Write your prompt here..."></textarea>
-<button class="send" onclick="sendPrompt()">Send</button>
-<div id="response"></div>
-<p class="note">Demo only: AI providers are not connected.</p>
-</div>
-</section>
-
-<section id="image" class="page">
-<h1>Image Studio</h1>
-<div class="panel">
-<h3>Create Images</h3>
-<textarea placeholder="Describe your image..."></textarea>
-<p class="note">Image generation integration pending.</p>
-</div>
-</section>
-
-<section id="video" class="page">
-<h1>Video Studio</h1>
-<div class="panel">
-<h3>Create Videos</h3>
-<textarea placeholder="Describe your video..."></textarea>
-<p class="note">Video generation integration pending.</p>
-</div>
-</section>
-
-<section id="audio" class="page">
-<h1>Audio Studio</h1>
-<div class="panel">
-<h3>Audio Workspace</h3>
-<textarea placeholder="Describe your audio task..."></textarea>
-<p class="note">Audio integration pending.</p>
-</div>
-</section>
-
-<section id="development" class="page">
-<h1>Development Studio</h1>
-<div class="panel">
-<h3>Developer Workspace</h3>
-<p>Organise your development projects here.</p>
-</div>
-</section>
-
-<section id="tools" class="page">
-<h1>AI Tool Directory</h1>
-<div class="panel">
-<p>ChatGPT</p>
-<p>Claude</p>
-<p>Gemini</p>
-<p>Perplexity</p>
-<p>Runway</p>
-<p>ElevenLabs</p>
-<p class="note">Direct integrations are not configured yet.</p>
-</div>
-</section>
+<section id="workspace" class="page"><h1>AI Workspace</h1><div class="panel"><h3>New Conversation</h3><textarea id="prompt" placeholder="Write your prompt here..."></textarea><button class="action" onclick="sendPrompt()">Send</button><div id="response"></div><p class="note">Demo only: AI providers are not connected.</p></div></section>
+<section id="image" class="page"><h1>Image Studio</h1><div class="panel"><h3>Create Images</h3><textarea placeholder="Describe your image..."></textarea><p class="note">Image generation integration pending.</p></div></section>
+<section id="video" class="page"><h1>Video Studio</h1><div class="panel"><h3>Create Videos</h3><textarea placeholder="Describe your video..."></textarea><p class="note">Video generation integration pending.</p></div></section>
+<section id="audio" class="page"><h1>Audio Studio</h1><div class="panel"><h3>Audio Workspace</h3><textarea placeholder="Describe your audio task..."></textarea><p class="note">Audio integration pending.</p></div></section>
+<section id="development" class="page"><h1>Development Studio</h1><div class="panel"><h3>Developer Workspace</h3><p>Organise your development projects here.</p></div></section>
+<section id="tools" class="page"><h1>AI Tool Directory</h1><div class="panel"><p>ChatGPT</p><p>Claude</p><p>Gemini</p><p>Perplexity</p><p>Runway</p><p>ElevenLabs</p><p class="note">Direct integrations are not configured yet.</p></div></section>
 </main>
 </div>
-
 <script>
-function show(id){
-document.querySelectorAll('.page').forEach(p=>{
-p.classList.remove('active');
-});
-document.getElementById(id).classList.add('active');
-}
+// Inject only the public Supabase project URL and publishable/anon key at hosting time.
+// Never place a service-role key or JWT signing secret in this browser configuration.
+const MSTK_CONFIG = window.MSTK_CONFIG || {};
+let mstkSession = null;
 
-function sendPrompt(){
-const value=document.getElementById('prompt').value.trim();
-if(!value)return;
-document.getElementById('response').innerHTML=
-'<div class="panel"><b>Your prompt:</b><p></p><small>AI connection is not enabled yet.</small></div>';
-document.getElementById('response').querySelector('p').textContent=value;
+function show(id){
+  document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
+function setStatus(message, kind=''){
+  const el=document.getElementById('account-status');
+  el.textContent=message;
+  el.className='status'+(kind?' '+kind:'');
+}
+function setSignedIn(signedIn){
+  document.getElementById('signin-button').classList.toggle('hidden',signedIn);
+  document.getElementById('signup-button').classList.toggle('hidden',signedIn);
+  document.getElementById('signout-button').classList.toggle('hidden',!signedIn);
+  document.getElementById('verify-button').disabled=!signedIn;
+  document.getElementById('account-heading').textContent=signedIn?'Signed in':'Sign in or create an account';
+}
+function authConfig(){
+  if(typeof MSTK_CONFIG.supabaseUrl!=='string'||typeof MSTK_CONFIG.supabaseAnonKey!=='string')return null;
+  try{
+    const url=new URL(MSTK_CONFIG.supabaseUrl);
+    if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)return null;
+    if(!MSTK_CONFIG.supabaseAnonKey.trim())return null;
+    return {base:url.toString().replace(/\/$/,''),key:MSTK_CONFIG.supabaseAnonKey};
+  }catch{return null;}
+}
+async function authRequest(path,body,token){
+  const config=authConfig();
+  if(!config)throw new Error('Authentication is not configured. The site owner must set the public Supabase URL and publishable/anon key.');
+  const headers={'content-type':'application/json','apikey':config.key};
+  if(token)headers.authorization='Bearer '+token;
+  const response=await fetch(config.base+'/auth/v1/'+path,{method:'POST',headers,body:JSON.stringify(body),redirect:'error'});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(typeof data.msg==='string'?data.msg:typeof data.message==='string'?data.message:'Authentication request failed.');
+  return data;
+}
+async function authenticate(mode){
+  const email=document.getElementById('account-email').value.trim();
+  const password=document.getElementById('account-password').value;
+  if(!email||!password){setStatus('Enter your email and password.','error');return;}
+  if(password.length<8||password.length>128){setStatus('Password must be between 8 and 128 characters.','error');return;}
+  const buttons=['signin-button','signup-button'];
+  buttons.forEach(id=>document.getElementById(id).disabled=true);
+  try{
+    if(mode==='signup'){
+      const data=await authRequest('signup',{email,password});
+      if(data.access_token){
+        mstkSession=data;
+        setSignedIn(true);
+        setStatus('Account created and signed in.','good');
+      }else{
+        setStatus('Sign-up request received. Check your email for the confirmation step. No session has been created yet.','good');
+      }
+    }else{
+      mstkSession=await authRequest('token?grant_type=password',{email,password});
+      setSignedIn(true);
+      setStatus('Signed in for this page session.','good');
+    }
+    document.getElementById('account-password').value='';
+  }catch(error){
+    mstkSession=null;
+    setSignedIn(false);
+    setStatus(error.message||'Unable to complete authentication.','error');
+  }finally{
+    buttons.forEach(id=>document.getElementById(id).disabled=false);
+  }
+}
+async function verifySession(){
+  if(!mstkSession?.access_token)return;
+  const config=authConfig();
+  try{
+    const response=await fetch(config.base.replace(/\/$/,'')+'/../api/me',{headers:{authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
+    if(!response.ok)throw new Error('MSTK API verification failed (HTTP '+response.status+').');
+    const data=await response.json();
+    setStatus('MSTK API verified this session. User ID: '+data.user.id,'good');
+  }catch(error){
+    setStatus(error.message||'API verification is not available.','error');
+  }
+}
+async function signOut(){
+  const config=authConfig();
+  try{
+    if(mstkSession?.access_token&&config){
+      await fetch(config.base+'/auth/v1/logout',{method:'POST',headers:{apikey:config.key,authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
+    }
+  }catch{}
+  mstkSession=null;
+  setSignedIn(false);
+  setStatus('Signed out of this page session.','good');
+}
+function sendPrompt(){
+  const value=document.getElementById('prompt').value.trim();
+  if(!value)return;
+  const response=document.getElementById('response');
+  response.replaceChildren();
+  const panel=document.createElement('div');panel.className='panel';
+  const title=document.createElement('b');title.textContent='Your prompt:';
+  const paragraph=document.createElement('p');paragraph.textContent=value;
+  const note=document.createElement('small');note.textContent='AI connection is not enabled yet.';
+  panel.append(title,paragraph,note);response.append(panel);
+}
+if(!authConfig())setStatus('Authentication is not configured yet. Sign-in and sign-up are disabled until the public Supabase project settings are added.','error');
 </script>
 </body>
 </html>
