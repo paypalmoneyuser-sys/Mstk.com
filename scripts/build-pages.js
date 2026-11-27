@@ -1,4 +1,4 @@
-import { cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -29,7 +29,11 @@ export async function buildPages({ rootDir = path.resolve(path.dirname(fileURLTo
   await rm(outputDir, { recursive: true, force: true });
   await mkdir(outputDir, { recursive: true });
   await cp(path.join(rootDir, "index.html"), path.join(outputDir, "index.html"));
-  await cp(path.join(rootDir, "_headers"), path.join(outputDir, "_headers"));
+  const baseHeaders = await readFile(path.join(rootDir, "_headers"), "utf8");
+  const connectOrigins = [...new Set([supabaseUrl, apiBase].filter(Boolean))];
+  const connectSrc = ["'self'", ...connectOrigins].join(" ");
+  const csp = "Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; connect-src " + connectSrc + "; upgrade-insecure-requests";
+  await writeFile(path.join(outputDir, "_headers"), baseHeaders.trimEnd() + "\n  " + csp + "\n", "utf8");
   await cp(path.join(rootDir, "app.js"), path.join(outputDir, "app.js"));
   await cp(path.join(rootDir, "styles.css"), path.join(outputDir, "styles.css"));
 
