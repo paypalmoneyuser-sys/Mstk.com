@@ -23,3 +23,41 @@ jobs:
         run: npm test
       - name: Check JavaScript syntax
         run: npm run check
+
+  postgres-migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: mstk_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d mstk_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Bootstrap minimal Supabase auth test schema
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d mstk_test -v ON_ERROR_STOP=1 -f supabase/tests/bootstrap_local_auth.sql
+      - name: Apply all database migrations
+        env:
+          PGPASSWORD: postgres
+        run: |
+          for migration in supabase/migrations/*.sql; do
+            echo "Applying $migration"
+            psql -h localhost -U postgres -d mstk_test -v ON_ERROR_STOP=1 -f "$migration"
+          done
+      - name: Run RLS and tenant-integrity smoke tests
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d mstk_test -v ON_ERROR_STOP=1 -f supabase/tests/postgres_smoke.sql
