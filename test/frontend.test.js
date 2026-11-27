@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
 const html = await readFile(new URL("../Index.html", import.meta.url), "utf8");
+const schema = await readFile(new URL("../supabase/migrations/0001_initial_workspace_schema.sql", import.meta.url), "utf8");
 const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/i);
 
 test("frontend contains a parseable inline JavaScript bundle", () => {
@@ -130,4 +131,21 @@ test("user messages are saved only to the selected conversation and rendered as 
 test("workspace state is cleared on sign out", () => {
   assert.match(html, /selectedWorkspace=null;selectedConversation=null;resetWorkspacePanels\(\)/);
   assert.match(html, /if\(!selectedWorkspace\)return/);
+});
+
+
+test("saved message flow does not leave the send button disabled when AI is unavailable", () => {
+  assert.match(html, /Your message is saved\. Configure the MSTK API URL to enable AI replies/);
+  assert.match(html, /sendButton\.disabled=false;\s*return;/);
+  assert.match(html, /finally\{sendButton\.disabled=false;\}/);
+});
+
+test("workspace schema includes projects, conversations and messages with membership RLS", () => {
+  for (const table of ["public.projects", "public.conversations", "public.messages"]) {
+    assert.ok(schema.includes("create table if not exists " + table), "missing schema for " + table);
+  }
+  assert.match(schema, /create policy projects_member_all/);
+  assert.match(schema, /create policy conversations_member_select/);
+  assert.match(schema, /create policy messages_member_select/);
+  assert.match(schema, /role = 'user'/);
 });
