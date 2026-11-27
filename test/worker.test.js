@@ -73,11 +73,12 @@ test("API routes fail closed when rate limiter throws", async () => {
   assert.equal(response.status, 503);
 });
 
-test("API rejects requests without a declared body size", async () => {
+test("API safely accepts a small streamed body without Content-Length", async () => {
   const response = await worker.fetch(new Request("https://api.example/api/private", {
     method: "POST", body: "x",
   }), env);
-  assert.equal(response.status, 411);
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { error: "authentication_unavailable" });
 });
 
 test("API rejects requests larger than one MiB", async () => {
