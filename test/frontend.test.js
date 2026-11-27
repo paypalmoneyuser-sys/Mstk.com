@@ -63,3 +63,18 @@ test("tool directory renders catalogue data as text rather than injecting HTML",
   assert.match(html, /card\.append\(title,tags,detail\)/);
   assert.match(html, /No age-check bypass is offered/);
 });
+
+
+test("home dashboard reports current project status without claiming integrations are live", () => {
+  for (const text of ["58", "22", "0", "Catalogue entries", "Fully audited", "Connected & live-tested"]) {
+    assert.ok(html.includes(text), "expected dashboard status text: " + text);
+  }
+  assert.match(html, /Provider connections remain disabled until they pass review and testing/);
+});
+
+test("dashboard shortcuts navigate to existing workspace sections", () => {
+  for (const id of ["workspace", "tools", "account", "image", "video", "audio", "development"]) {
+    assert.match(html, new RegExp("show\\('" + id + "'\\)"));
+  }
+  assert.match(html, /class="shortcut-grid"/);
+});
