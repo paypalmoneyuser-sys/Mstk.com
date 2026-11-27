@@ -11,6 +11,7 @@ const appScript = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const source = html + "\n" + appScript;
 const css = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const frontendSecurity = await readFile(new URL("../docs/FRONTEND-SECURITY.md", import.meta.url), "utf8");
+const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
 
 test("frontend application JavaScript is external and parseable", () => {
   assert.match(source, /<script src="\/app\.js"><\/script>/);
