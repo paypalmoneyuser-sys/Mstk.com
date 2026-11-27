@@ -19,7 +19,7 @@ Supabase Auth must issue asymmetric ES256 or RS256 access tokens and expose its 
 - Protected `GET /api/me` returns only verified user ID and role.
 - Protected `POST /api/ai/chat` accepts a prompt and calls one configured OpenAI-style chat-completions endpoint server-side.
 - AI route is disabled unless `MSTK_AI_ENABLED=true`; validates HTTPS endpoint, requires a server-side API key and model, caps prompt at 12,000 characters, and applies a 30-second timeout.
-- Existing origin, rate-limit binding, and declared request-size guards retained.
+- Exact-origin CORS and fail-closed rate limiting are retained. Current API requests are read and bounded by actual bytes (1 MiB maximum), not only by the declared Content-Length.
 
 ## Browser workspace data
 
@@ -49,7 +49,7 @@ The adapter sends the user prompt to the selected provider. Do not send sensitiv
 - Configure Cloudflare rate-limiting binding and the real frontend origin.
 - Add resource-level authorization and database access based only on verified identity.
 - Add invitation, account recovery, email verification, logout/revocation, and complete session lifecycle.
-- Add streamed request-byte enforcement for future upload/body handlers.
+- Add bounded streaming/storage controls before introducing file uploads or long-lived streaming endpoints.
 - Select and verify an age-appropriate AI provider; add provider-specific request/response validation, quotas, cost limits, abuse controls, and usage metering.
 - Run integration, penetration, dependency, privacy, and production end-to-end tests.
 
