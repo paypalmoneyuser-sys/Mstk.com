@@ -44,7 +44,7 @@ export async function buildPages({ rootDir = path.resolve(path.dirname(fileURLTo
       "window.MSTK_CONFIG = Object.freeze(" + JSON.stringify(config) + ");\n",
     { encoding: "utf8", flag: "w" }
   );
-  return { outputDir, files: ["index.html", "app.js", "styles.css", "mstk-config.js"] };
+  return { outputDir, files: ["index.html", "_headers", "app.js", "styles.css", "mstk-config.js"] };
 }
 
 const invokedPath = process.argv[1] ? pathToFileURL(path.resolve(process.argv[1])).href : "";
