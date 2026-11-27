@@ -306,3 +306,16 @@ test("frontend remains compatible with a strict external-asset CSP", () => {
   assert.match(frontendSecurity, /style-src 'self'/);
   assert.doesNotMatch(frontendSecurity, /(?:script-src|style-src)[^;\n]*(?:unsafe-inline|unsafe-eval)/);
 });
+
+
+test("every required local frontend asset is present and optional config setup is documented", () => {
+  const localAssets = [...html.matchAll(/(?:src|href)="(\\/[^"]+)"/g)].map((match) => match[1]);
+  assert.deepEqual(localAssets, ["/styles.css", "/mstk-config.js", "/app.js"]);
+  // The config file is intentionally local-only and ignored by Git; the other
+  // two referenced assets must be shipped with the site.
+  assert.ok(css.length > 0, "styles.css must exist and not be empty");
+  assert.ok(appScript.length > 0, "app.js must exist and not be empty");
+  assert.match(gitignore, /^mstk-config\\.js$/m);
+  assert.match(readme, /copy `mstk-config\\.example\\.js` to `mstk-config\\.js`/i);
+  assert.match(appScript, /window\\.MSTK_CONFIG \\|\\| \\{\\}/);
+});
