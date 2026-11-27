@@ -275,6 +275,29 @@ function authConfig(){
     return {base:url.toString().replace(/\/$/,''),key:MSTK_CONFIG.supabaseAnonKey,apiBase};
   }catch{return null;}
 }
+async function refreshSessionIfNeeded(){
+  if(!mstkSession?.access_token)return null;
+  const expiresAt=Number(mstkSession._mstkExpiresAt||0);
+  if(!expiresAt||expiresAt>Date.now()+60000)return mstkSession;
+  if(typeof mstkSession.refresh_token!=='string'||!mstkSession.refresh_token){
+    mstkSession=null;setSignedIn(false);resetWorkspacePanels();
+    throw new Error('Your sign-in session expired. Please sign in again.');
+  }
+  const refreshed=await authRequest('token?grant_type=refresh_token',{refresh_token:mstkSession.refresh_token});
+  if(!refreshed?.access_token){
+    mstkSession=null;setSignedIn(false);resetWorkspacePanels();
+    throw new Error('Your sign-in session could not be refreshed. Please sign in again.');
+  }
+  refreshed._mstkExpiresAt=Date.now()+Math.max(0,Number(refreshed.expires_in)||3600)*1000;
+  mstkSession=refreshed;
+  return mstkSession;
+}
+function trackSessionExpiry(session){
+  if(session&&Number.isFinite(Number(session.expires_in))){
+    session._mstkExpiresAt=Date.now()+Math.max(0,Number(session.expires_in))*1000;
+  }
+  return session;
+}
 async function authRequest(path,body,token){
   const config=authConfig();
   if(!config)throw new Error('Authentication is not configured. The site owner must set the public Supabase URL and publishable/anon key.');
@@ -296,7 +319,7 @@ async function authenticate(mode){
     if(mode==='signup'){
       const data=await authRequest('signup',{email,password});
       if(data.access_token){
-        mstkSession=data;
+        mstkSession=trackSessionExpiry(data);
         setSignedIn(true);
         setStatus('Account created and signed in.','good');
         loadWorkspaces();
@@ -304,7 +327,7 @@ async function authenticate(mode){
         setStatus('Sign-up request received. Check your email for the confirmation step. No session has been created yet.','good');
       }
     }else{
-      mstkSession=await authRequest('token?grant_type=password',{email,password});
+      mstkSession=trackSessionExpiry(await authRequest('token?grant_type=password',{email,password}));
       setSignedIn(true);
       setStatus('Signed in for this page session.','good');
       loadWorkspaces();
@@ -322,6 +345,7 @@ async function verifySession(){
   if(!mstkSession?.access_token)return;
   const config=authConfig();
   try{
+    await refreshSessionIfNeeded();
     if(!config.apiBase)throw new Error('MSTK API base URL is not configured; Supabase sign-in may work, but API session verification is unavailable.');
     const response=await fetch(new URL('/api/me',config.apiBase).toString(),{headers:{authorization:'Bearer '+mstkSession.access_token},redirect:'error'});
     if(!response.ok)throw new Error('MSTK API verification failed (HTTP '+response.status+').');
@@ -395,6 +419,7 @@ function setWorkspaceStatus(message,kind=''){
 async function workspaceRequest(path,method='GET',body){
   const config=authConfig();
   if(!config||!mstkSession?.access_token)throw new Error('Sign in and configure Supabase before accessing workspace data.');
+  await refreshSessionIfNeeded();
   const headers={apikey:config.key,authorization:'Bearer '+mstkSession.access_token,accept:'application/json'};
   const options={method,headers,redirect:'error'};
   if(body!==undefined){headers['content-type']='application/json';headers.prefer='return=representation';options.body=JSON.stringify(body);}
