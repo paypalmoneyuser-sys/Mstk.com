@@ -413,3 +413,26 @@ This batch reviews original-list entries #46–#49. Findings are preliminary off
 - Artflow terms: https://artflow.ai/terms
 
 **Batch result:** 4 more original-list entries have preliminary notes (46/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Ollama is a possible local-runtime candidate subject to model-by-model review and safe isolation; Kixi.ai and Flashloop remain unidentified; Artflow remains a manual workflow until authorized API and commercial rights are proven. No accounts, code execution, paid services, or integrations were enabled.
+
+## Official-source research batch 13 — 2026-11-28
+
+This batch reviews original-list entries #50–#53. Findings are preliminary official-source notes, not full audits or live integration tests. No accounts, credentials, subscriptions, payments, or integrations were created.
+
+| # | Product | Official-source findings | Cost / quota | MSTK decision and remaining gates |
+|---:|---|---|---|---|
+| 50 | ElevenLabs | Official terms distinguish consumer and developer services. Current terms require users to be at least 13 and users under 18 to have parent/guardian consent; account holders must have legal capacity to accept the applicable terms. The API provides speech, transcription and related audio endpoints, but API use is separately metered and governed by its developer terms and content rules. | Free and paid tiers have different monthly credit allowances and feature rights; commercial use and higher limits depend on the plan. Exact current India price, API quotas, concurrency and commercial redistribution rights need verification before launch. | Keep disabled until an eligible adult/organisation can lawfully own the developer account and review API terms, end-user eligibility, voice/likeness consent, moderation, retention, data processing, commercial rights and cost caps. Do not clone or imitate a real person's voice without appropriate permission. |
+| 51 | Fish Audio | Official service offers text-to-speech, speech-to-text and voice-cloning APIs. Public API docs describe API-key authentication and usage metering; voice cloning creates additional consent and identity risks. This pass did not conclusively establish all account-age, end-user and commercial redistribution conditions for a teen-facing third-party workspace. | API is metered; consumer subscription/credits do not prove API use is free. Exact current API prices, quotas and India billing require direct verification. | Keep voice cloning disabled. Do not connect until developer eligibility, end-user age, voice-owner consent, prohibited-use rules, retention, privacy, commercial/redistribution permission, quotas and pricing are confirmed. A safe future speech feature should default to licensed synthetic voices and clear disclosure. |
+| 52 | EveryGen.ai | The name does not resolve to a sufficiently authoritative, uniquely identified official product/API in this review. No reliable developer documentation, terms, licence, age policy, or pricing/quota source was established. | Unknown. | Block pending exact official product URL and publisher identity. Do not use unofficial endpoints, browser automation or shared credentials. |
+| 53 | ClipFlux.ai | The exact product identity and official developer/API offering remain unverified in this pass. No authoritative terms, licence, age rules, pricing or quotas could be confidently tied to the original-list entry. | Unknown. | Block pending exact official product URL and publisher identity. Do not connect or automate until API support, licence, account eligibility, data handling, costs and commercial rights are established. |
+
+### Official sources for batch 13
+
+- ElevenLabs Terms of Service: https://elevenlabs.io/terms
+- ElevenLabs API documentation: https://elevenlabs.io/docs/api-reference/introduction
+- ElevenLabs pricing: https://elevenlabs.io/pricing
+- Fish Audio API documentation: https://docs.fish.audio/
+- Fish Audio API pricing: https://fish.audio/pricing
+- EveryGen.ai: exact authoritative source not established.
+- ClipFlux.ai: exact authoritative source not established.
+
+**Batch result:** 4 more original-list entries have preliminary notes (50/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. ElevenLabs and Fish Audio are possible future speech-provider candidates subject to adult account ownership, terms, consent, privacy, pricing and safety review; voice cloning remains disabled. EveryGen.ai and ClipFlux.ai remain unidentified. No accounts, paid services, credits, or integrations were enabled.
