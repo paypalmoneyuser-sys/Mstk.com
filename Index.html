@@ -113,8 +113,8 @@ function authConfig(){
     if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)return null;
     if(!MSTK_CONFIG.supabaseAnonKey.trim())return null;
     let apiBase='';
-    if(typeof MSTK_CONFIG.apiBase==='string'&&MSTK_CONFIG.apiBase.trim()){const apiUrl=new URL(MSTK_CONFIG.apiBase);if(apiUrl.protocol!=='https:'||apiUrl.username||apiUrl.password||apiUrl.search||apiUrl.hash)return null;apiBase=apiUrl.toString().replace(/\\/$/,'');}
-    return {base:url.toString().replace(/\\/$/,''),key:MSTK_CONFIG.supabaseAnonKey,apiBase};
+    if(typeof MSTK_CONFIG.apiBase==='string'&&MSTK_CONFIG.apiBase.trim()){const apiUrl=new URL(MSTK_CONFIG.apiBase);if(apiUrl.protocol!=='https:'||apiUrl.username||apiUrl.password||apiUrl.search||apiUrl.hash)return null;apiBase=apiUrl.toString().replace(/\/$/,'');}
+    return {base:url.toString().replace(/\/$/,''),key:MSTK_CONFIG.supabaseAnonKey,apiBase};
   }catch{return null;}
 }
 async function authRequest(path,body,token){
