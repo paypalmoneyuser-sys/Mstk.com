@@ -148,3 +148,25 @@ This batch reviews original-list entries #8–#11. These notes are preliminary; 
 - Blender FAQ on GPL and Python API scripts: https://www.blender.org/support/faq/
 
 **Batch result:** 3 of 4 entries have identifiable official-source findings; #8 remains blocked pending an exact source. No entries are fully audited or integrated. Total with batch notes: 11 of 58 original-list entries have some official-source research, not full audits.
+
+
+## Optional / restricted integrations policy — 2026-11-27
+
+MSTK may provide per-tool availability controls rather than requiring every user to see or enable every integration. This is a product-design proposal and does not override a provider's terms or legal eligibility rules.
+
+### User-facing controls
+
+- Show each tool's eligibility, supported countries, pricing, quota, data handling, required permissions and verification status before a user connects it.
+- Keep integrations disabled by default until their full audit and required approvals are complete.
+- Where a provider expressly permits age-restricted access, show an optional restricted-tools section and use only the provider's approved age-verification or account-eligibility flow.
+- Prefer provider-hosted verification and receive only a minimal eligibility result where possible. Do not collect or store identity documents, birth dates or biometric data in MSTK unless a separately reviewed legal, privacy and security design makes it strictly necessary.
+- A user toggle or self-declared age is not proof of eligibility. Do not offer workarounds, false age declarations, or alternate accounts to bypass restrictions.
+- Keep developer eligibility separate from end-user eligibility. A provider's 18+ developer requirement cannot be satisfied by checking the age of each visitor.
+- If the developer, account owner, or any intended end-user group is ineligible under provider terms, the integration remains unavailable. Verification does not override minimum-age rules, local law, guardian-consent requirements, or provider approval.
+- Display a clear unavailable reason and a safe alternative when an integration is blocked. Never imply that a disabled tool is connected or approved.
+
+### Higgsfield MAGI-2 decision
+
+Higgsfield's API terms reviewed for this audit require both developers and end users to be at least 18 (or the higher applicable age of majority). An age-check option for visitors therefore does not make this API eligible for the current MSTK developer setup. Keep MAGI-2 excluded and disabled; reconsider only if the developer/account owner and every intended user meet the provider's requirements and the provider's terms still permit MSTK's use. No verification flow or integration should be built to bypass this restriction.
+
+**Status:** Product-design policy documented only. No age-verification vendor, identity collection, restricted integration, or provider connection has been enabled.
