@@ -167,3 +167,14 @@ test("blind comparison requires a choice before revealing provider labels", () =
   assert.match(html, /selected\.source/);
   assert.match(html, /does not call AI providers or incur API charges/);
 });
+
+
+test("blind comparison reveals and displays the selected best response", () => {
+  assert.match(html, /id="best-result"/);
+  assert.match(html, /id="best-result-source"/);
+  assert.match(html, /id="best-result-text"/);
+  assert.match(html, /best-result-text'\)\.textContent=selected\.text/);
+  assert.match(html, /best-result-source'\)\.textContent='Winning source: '\+selected\.source/);
+  assert.match(html, /best-result'\)\.hidden=false/);
+  assert.match(html, /best-result'\)\.hidden=true/);
+});
