@@ -5,7 +5,7 @@ The frontend has been split into same-origin external assets:
 - `/mstk-config.js`: public Supabase project URL and publishable/anon key only.
 - `/app.js`: application logic.
 - `/styles.css`: application styles.
-- `/Index.html`: markup and external asset references.
+- `/index.html`: markup and external asset references.
 
 The HTML currently has no inline `<script>`, `<style>`, `on*=` event-handler attributes, `style=` attributes, or `javascript:` URLs. Keep these constraints in CI so a strict script/style policy remains practical.
 
@@ -36,7 +36,7 @@ upgrade-insecure-requests
 
 ## Hosting-dependent headers
 
-The exact configuration file and syntax depend on the chosen static hosting provider. Do not add a provider-specific headers file until that provider is selected. At minimum, also consider:
+Cloudflare Pages uses the root `_headers` file included in the static build for baseline headers. These do not replace the host-specific Content-Security-Policy, which remains unset until the exact Supabase and API origins are known. If a different host is chosen, translate these headers into its supported configuration. Also consider:
 
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`
