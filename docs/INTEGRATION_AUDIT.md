@@ -358,3 +358,12 @@ This batch reviews original-list entries #38–#41. Findings are preliminary. No
 - Claude-Mem licence file: https://github.com/thedotmack/claude-mem/blob/main/LICENSE
 
 **Batch result:** 4 more original-list entries have preliminary notes (38/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. Maestro Video Generator remains unidentified; DeepSeek Harness is a developer-preview orchestration framework rather than a model API; Headroom remains ambiguous with one plausible SDK match; Claude-Mem is a developer-session memory plugin with significant privacy and licence considerations. No accounts, code execution, paid services, or integrations were enabled.
+
+
+### Batch 10 clarification — Claude-Mem licence
+
+A follow-up check of the current official thedotmack/claude-mem repository and its licence page shows the current project is Apache-2.0. The earlier batch-10 table's AGPL-3.0 / PolyForm Noncommercial statement is stale and should not be relied on for the current upstream release. The repository history indicates the project previously used AGPL-3.0 before relicensing; the current official licence documentation and package metadata identify Apache-2.0. This licence correction does not change the security decision: Claude-Mem is a developer-session memory system that captures tool activity and persists session context, so it is not approved as a public multi-tenant MSTK feature without a separate privacy, retention, isolation, and security design.
+
+Official current licence evidence:
+- https://github.com/thedotmack/claude-mem/blob/main/docs/license.md
+- https://github.com/thedotmack/claude-mem/blob/main/package.json
