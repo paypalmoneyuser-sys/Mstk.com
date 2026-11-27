@@ -77,8 +77,8 @@ test("API safely accepts a small streamed body without Content-Length", async ()
   const response = await worker.fetch(new Request("https://api.example/api/private", {
     method: "POST", body: "x",
   }), env);
-  assert.equal(response.status, 503);
-  assert.deepEqual(await response.json(), { error: "authentication_unavailable" });
+  assert.equal(response.status, 401);
+  assert.deepEqual(await response.json(), { error: "missing_bearer_token" });
 });
 
 test("API rejects requests larger than one MiB", async () => {
