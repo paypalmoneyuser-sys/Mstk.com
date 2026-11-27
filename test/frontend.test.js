@@ -195,3 +195,42 @@ test("failed Supabase refresh clears the in-memory session and asks the user to 
   assert.match(html, /mstkSession=null;setSignedIn\(false\);resetWorkspacePanels\(\)/);
   assert.match(html, /Your sign-in session expired\. Please sign in again\./);
 });
+
+
+test("account UI exposes a password recovery request and reset panel", () => {
+  assert.match(html, /id="recover-button"/);
+  assert.match(html, /onclick="recoverAccount\(\)"/);
+  assert.match(html, /id="password-recovery-panel"/);
+  assert.match(html, /id="recovery-password"/);
+  assert.match(html, /id="reset-password-button"/);
+  assert.match(html, /autocomplete="new-password"/);
+});
+
+test("password recovery sends only the entered email and redirects to the current page", () => {
+  assert.match(html, /authRequest\('recover\?redirect_to='\+encodeURIComponent\(redirectTo\),\{email\}\)/);
+  assert.match(html, /const redirectTo=location\.origin\+location\.pathname/);
+  assert.match(html, /If an account exists for that address/);
+});
+
+test("recovery callback accepts recovery tokens from the URL fragment and cleans the fragment", () => {
+  assert.match(html, /function handlePasswordRecoveryCallback\(\)/);
+  assert.match(html, /params\.get\('access_token'\)/);
+  assert.match(html, /params\.get\('refresh_token'\)/);
+  assert.match(html, /params\.get\('type'\)/);
+  assert.match(html, /type==='recovery'/);
+  assert.match(html, /history\.replaceState\(null,'',location\.pathname\+location\.search\)/);
+  assert.match(html, /handlePasswordRecoveryCallback\(\);/);
+});
+
+test("password reset updates the authenticated Supabase user and clears the temporary recovery session", () => {
+  assert.match(html, /config\.base\+'\/auth\/v1\/user'/);
+  assert.match(html, /method:'PUT'/);
+  assert.match(html, /JSON\.stringify\(\{password\}\)/);
+  assert.match(html, /Password updated\. Sign in with your new password\./);
+  assert.match(html, /document\.getElementById\('recovery-password'\)\.value=''/);
+});
+
+test("browser auth tokens are not persisted in web storage", () => {
+  assert.doesNotMatch(scriptMatch[1], /localStorage|sessionStorage/);
+  assert.match(html, /keeps the session in page memory only/);
+});
