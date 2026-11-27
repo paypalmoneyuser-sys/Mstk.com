@@ -90,7 +90,7 @@ test("workspace UI exposes create, refresh and live status controls", () => {
 });
 
 test("workspace data requests use the signed-in Supabase session and RLS REST API", () => {
-  assert.match(html, /config\.base\+'\/rest\/v1\/'+path/);
+  assert.match(html, /config\.base\+'\/rest\/v1\/'\+path/);
   assert.match(html, /authorization:'Bearer '\+mstkSession\.access_token/);
   assert.match(html, /owner_id:mstkSession\.user\.id/);
   assert.match(html, /workspaces\?select=id,name,created_at&order=created_at\.desc/);
