@@ -436,3 +436,17 @@ This batch reviews original-list entries #50–#53. Findings are preliminary off
 - ClipFlux.ai: exact authoritative source not established.
 
 **Batch result:** 4 more original-list entries have preliminary notes (50/58 unique entries with some official-source research). This is not a full audit. Fully audited: 0. Successfully integrated and live-tested from this list: 0. ElevenLabs and Fish Audio are possible future speech-provider candidates subject to adult account ownership, terms, consent, privacy, pricing and safety review; voice cloning remains disabled. EveryGen.ai and ClipFlux.ai remain unidentified. No accounts, paid services, credits, or integrations were enabled.
+
+
+### Batch 13 correction — ElevenLabs age and minor-directed product eligibility
+
+A direct review of the current official ElevenLabs non-EEA Terms and Prohibited Use Policy found a stricter rule than the preliminary table above: users must be at least 18 to have an ElevenLabs account, and products or experiences directed at under-18 users are prohibited unless ElevenLabs has assessed and approved them in writing. This applies to the current MSTK teen-facing project; ordinary parental consent alone does not replace the stated written approval. Therefore ElevenLabs must be marked **age/policy blocked**, not merely pending adult account ownership. Do not create an account, API key, or integration for this project. Voice-model creation using recordings of anyone under 18 is also prohibited by the current policy.
+
+The ElevenAPI Terms (updated 2026-10-09) separately require authority to accept the terms, secure server-side credentials, and customer-application user authentication/authorization. These API obligations do not override the minor-use policy.
+
+Updated official evidence:
+- Non-EEA Terms of Use: https://elevenlabs.io/terms-of-use
+- Prohibited Use Policy: https://elevenlabs.io/use-policy
+- ElevenAPI Terms (updated 2026-10-09): https://elevenlabs.io/elevenapi-terms
+
+The previous batch-13 row's statement that the terms require only 13+ with guardian consent is incorrect for the current non-EEA terms and is superseded by this correction. The overall 50/58 preliminary-research count is unchanged.
