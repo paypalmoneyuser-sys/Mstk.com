@@ -5,6 +5,7 @@ const JSON_HEADERS = {
   "referrer-policy": "strict-origin-when-cross-origin",
   "x-frame-options": "DENY",
   "permissions-policy": "camera=(), microphone=(), geolocation=()",
+  "strict-transport-security": "max-age=31536000",
 };
 
 const MAX_API_BODY_BYTES = 1_048_576;
