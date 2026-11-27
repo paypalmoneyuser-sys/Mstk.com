@@ -182,16 +182,36 @@ async function signOut(){
   setSignedIn(false);
   setStatus('Signed out of this page session.','good');
 }
-function sendPrompt(){
+async function sendPrompt(){
   const value=document.getElementById('prompt').value.trim();
   if(!value)return;
   const response=document.getElementById('response');
   response.replaceChildren();
   const panel=document.createElement('div');panel.className='panel';
-  const title=document.createElement('b');title.textContent='Your prompt:';
-  const paragraph=document.createElement('p');paragraph.textContent=value;
-  const note=document.createElement('small');note.textContent='AI connection is not enabled yet.';
-  panel.append(title,paragraph,note);response.append(panel);
+  const note=document.createElement('p');note.className='note';
+  note.textContent='Connecting to MSTK AI…';
+  panel.append(note);response.append(panel);
+  const config=authConfig();
+  if(!mstkSession?.access_token||!config?.apiBase){
+    note.textContent='Sign in and configure the MSTK API URL before using the AI chat endpoint.';
+    return;
+  }
+  try{
+    const endpoint=new URL('/api/ai/chat',config.apiBase);
+    const result=await fetch(endpoint.toString(),{
+      method:'POST',
+      headers:{'content-type':'application/json',authorization:'Bearer '+mstkSession.access_token},
+      body:JSON.stringify({prompt:value}),
+      redirect:'error'
+    });
+    const data=await result.json().catch(()=>({}));
+    if(!result.ok)throw new Error(data.error==='ai_provider_not_enabled'?'AI provider is not enabled yet.':data.error==='ai_provider_not_configured'?'AI provider configuration is incomplete.':'MSTK AI request failed (HTTP '+result.status+').');
+    if(typeof data.answer!=='string')throw new Error('MSTK returned an invalid AI response.');
+    note.textContent=data.answer;
+  }catch(error){
+    note.textContent=error.message||'MSTK AI is temporarily unavailable.';
+    note.classList.add('error');
+  }
 }
 if(!authConfig())setStatus('Authentication is not configured yet. Sign-in and sign-up are disabled until the public Supabase project settings are added.','error');
 </script>
