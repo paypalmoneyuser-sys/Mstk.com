@@ -12,6 +12,7 @@ const source = html + "\n" + appScript;
 const css = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const frontendSecurity = await readFile(new URL("../docs/FRONTEND-SECURITY.md", import.meta.url), "utf8");
 const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+const integrationAudit = await readFile(new URL("../docs/INTEGRATION_AUDIT.md", import.meta.url), "utf8");
 
 test("frontend application JavaScript is external and parseable", () => {
   assert.match(source, /<script src="\/app\.js"><\/script>/);
@@ -73,10 +74,11 @@ test("tool directory renders catalogue data as text rather than injecting HTML",
 
 
 test("home dashboard reports current project status without claiming integrations are live", () => {
-  for (const text of ["58", "22", "0", "Catalogue entries", "Fully audited", "Connected & live-tested"]) {
+  for (const text of ["58", "55", "0", "Catalogue entries", "Fully audited", "Connected & live-tested"]) {
     assert.ok(html.includes(text), "expected dashboard status text: " + text);
   }
   assert.match(source, /Provider connections remain disabled until they pass review and testing/);
+  assert.match(integrationAudit, /55\/58 unique entries/);
 });
 
 test("dashboard shortcuts navigate to existing workspace sections", () => {
