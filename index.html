@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MSTK — an AI workspace preview.">
+<title>MSTK.COM - AI Workspace</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>MSTK<span>.COM</span></header>
+<div class="layout">
+<nav aria-label="Main navigation">
+<button data-mstk-action="show" data-mstk-value="home">Home</button>
+<button data-mstk-action="show" data-mstk-value="account">Account</button>
+<button data-mstk-action="show" data-mstk-value="workspace">AI Workspace</button>
+<button data-mstk-action="show" data-mstk-value="image">Image Studio</button>
+<button data-mstk-action="show" data-mstk-value="video">Video Studio</button>
+<button data-mstk-action="show" data-mstk-value="audio">Audio Studio</button>
+<button data-mstk-action="show" data-mstk-value="development">Development</button>
+<button data-mstk-action="show" data-mstk-value="tools">Tool Directory</button>
+</nav>
+<main>
+<section id="home" class="page active">
+<h1>Welcome to MSTK</h1>
+<p>Your AI workspace dashboard.</p>
+<div class="panel hero-panel">
+<p class="eyebrow">MSTK.COM · WORKSPACE PREVIEW</p>
+<h2>One space to explore, create and build.</h2>
+<p class="note">Start with the workspace or browse the original tool catalogue. Provider connections remain disabled until they pass review and testing.</p>
+<div class="quick-actions">
+<button class="action" data-mstk-action="show" data-mstk-value="workspace">Open AI Workspace</button>
+<button class="action secondary" data-mstk-action="show" data-mstk-value="tools">Explore 58 Tools</button>
+</div>
+</div>
+<div class="dashboard-grid" aria-label="Project status">
+<div class="metric-card"><span class="metric-value">58</span><span class="metric-label">Catalogue entries</span></div>
+<div class="metric-card"><span class="metric-value">55</span><span class="metric-label">With preliminary research</span></div>
+<div class="metric-card"><span class="metric-value">0</span><span class="metric-label">Fully audited</span></div>
+<div class="metric-card"><span class="metric-value">0</span><span class="metric-label">Connected & live-tested</span></div>
+</div>
+<div class="panel">
+<h3>Workspace shortcuts</h3>
+<div class="shortcut-grid">
+<button class="shortcut" data-mstk-action="show" data-mstk-value="account"><strong>Account</strong><span>Sign in and check account setup</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="image"><strong>Image Studio</strong><span>Image tools — integration pending</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="video"><strong>Video Studio</strong><span>Video tools — integration pending</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="audio"><strong>Audio Studio</strong><span>Audio tools — integration pending</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="development"><strong>Development</strong><span>Developer workspace preview</span></button>
+<button class="shortcut" data-mstk-action="show" data-mstk-value="tools"><strong>Tool Directory</strong><span>Search and filter all 58 entries</span></button>
+</div>
+</div>
+<p class="note">Status is based on the current project audit register. Catalogue listing does not mean a provider is approved, connected, free or available in every country.</p>
+</section>
+
+<section id="account" class="page">
+<h1>Account</h1>
+<div class="panel">
+<h2 id="account-heading">Sign in or create an account</h2>
+<p class="note">Authentication uses your configured Supabase project. Do not share your password or verification codes with anyone.</p>
+<label for="account-email">Email</label>
+<input id="account-email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com">
+<label for="account-password">Password</label>
+<input id="account-password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="At least 8 characters">
+<div>
+<button class="action" id="signin-button" data-mstk-action="signin">Sign in</button>
+<button class="action" id="signup-button" data-mstk-action="signup">Create account</button>
+<button class="action secondary" id="recover-button" data-mstk-action="recover">Forgot password?</button>
+<button class="action hidden" id="signout-button" data-mstk-action="signout">Sign out</button>
+</div>
+<div id="password-recovery-panel" class="hidden" aria-live="polite">
+<label for="recovery-password">New password</label>
+<input id="recovery-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Choose a new password">
+<button class="action" id="reset-password-button" data-mstk-action="complete-recovery">Set new password</button>
+</div>
+<div id="account-status" class="status" role="status" aria-live="polite">Authentication is not configured yet.</div>
+<p class="note">For users under 18, use the service only where its age rules allow and with parent/guardian permission when required. Email confirmation may be required. This preview keeps the session in page memory only; refreshing the page signs you out.</p>
+</div>
+<div class="panel">
+<h3>Connection check</h3>
+<button class="action" id="verify-button" data-mstk-action="verify-session" disabled>Verify API session</button>
+<p class="note">Checks the protected MSTK API endpoint after a successful sign-in. It does not access your private workspace data.</p>
+</div>
+</section>
+
+<section id="workspace" class="page">
+<h1>AI Workspace</h1>
+<div class="panel">
+<h3>Your Workspaces</h3>
+<p class="note">Create and select a workspace. Data access is controlled by your Supabase database's row-level security policies.</p>
+<label for="workspace-name">New workspace name</label>
+<input id="workspace-name" type="text" maxlength="100" placeholder="e.g. My Projects">
+<button class="action" id="create-workspace-button" data-mstk-action="create-workspace">Create workspace</button>
+<button class="action secondary" id="refresh-workspaces-button" data-mstk-action="load-workspaces">Refresh list</button>
+<div id="workspace-status" class="status" role="status" aria-live="polite">Sign in to load your workspaces.</div>
+<div id="workspace-list" class="workspace-list" aria-live="polite"></div>
+</div>
+<div class="panel">
+<h3 id="selected-workspace-title">Select a workspace to manage projects</h3>
+<label for="project-name">New project name</label>
+<input id="project-name" type="text" maxlength="120" placeholder="e.g. Website redesign">
+<button class="action" id="create-project-button" data-mstk-action="create-project" disabled>Create project</button>
+<div id="project-list" class="workspace-list"></div>
+</div>
+<div class="panel">
+<h3>Conversations</h3>
+<label for="conversation-title">New conversation title</label>
+<input id="conversation-title" type="text" maxlength="200" placeholder="e.g. Planning and ideas">
+<button class="action" id="create-conversation-button" data-mstk-action="create-conversation" disabled>New conversation</button>
+<div id="conversation-list" class="workspace-list"></div>
+<div id="history-status" class="status" role="status" aria-live="polite">Select a workspace first.</div>
+<div id="message-history" class="message-history" aria-live="polite"></div>
+</div>
+<div class="panel" id="blind-comparison">
+<h3>Blind Response Comparison</h3>
+<p class="note">Compare two responses without seeing their source labels first. This manual preview does not call AI providers or incur API charges.</p>
+<label for="compare-source-a">Response A source label (hidden until reveal)</label>
+<input id="compare-source-a" maxlength="80" placeholder="e.g. Provider 1">
+<label for="compare-answer-a">Response A</label>
+<textarea id="compare-answer-a" maxlength="12000" placeholder="Paste the first response"></textarea>
+<label for="compare-source-b">Response B source label (hidden until reveal)</label>
+<input id="compare-source-b" maxlength="80" placeholder="e.g. Provider 2">
+<label for="compare-answer-b">Response B</label>
+<textarea id="compare-answer-b" maxlength="12000" placeholder="Paste the second response"></textarea>
+<button class="action" id="start-comparison-button" data-mstk-action="start-comparison">Start blind comparison</button>
+<div id="comparison-stage" hidden>
+<div class="comparison-grid">
+<article class="comparison-card"><h4>Response <span id="blind-label-one">A</span></h4><p id="blind-text-one"></p><button class="action secondary" data-mstk-action="choose-response" data-mstk-value="0">Choose this response</button></article>
+<article class="comparison-card"><h4>Response <span id="blind-label-two">B</span></h4><p id="blind-text-two"></p><button class="action secondary" data-mstk-action="choose-response" data-mstk-value="1">Choose this response</button></article>
+</div>
+<p id="comparison-status" class="status" role="status" aria-live="polite">Choose the response you prefer.</p>
+<button class="action secondary" id="reveal-comparison-button" data-mstk-action="reveal-comparison" disabled>Reveal sources</button>
+<div id="best-result" class="best-result" hidden aria-live="polite"><h4>Selected best response</h4><p id="best-result-source"></p><p id="best-result-text"></p></div>
+</div>
+</div>
+<div class="panel">
+<h3>Send a message</h3>
+<p class="note">Messages are saved to the selected conversation. AI replies are not saved yet; provider connections remain disabled.</p>
+<textarea id="prompt" maxlength="12000" placeholder="Write your prompt here..." disabled></textarea>
+<button class="action" id="send-prompt-button" data-mstk-action="send-prompt" disabled>Save message &amp; send</button>
+<div id="response"></div>
+</div>
+</section>
+<section id="image" class="page"><h1>Image Studio</h1><div class="panel"><h3>Create Images</h3><textarea placeholder="Describe your image..."></textarea><p class="note">Image generation integration pending.</p></div></section>
+<section id="video" class="page"><h1>Video Studio</h1><div class="panel"><h3>Create Videos</h3><textarea placeholder="Describe your video..."></textarea><p class="note">Video generation integration pending.</p></div></section>
+<section id="audio" class="page"><h1>Audio Studio</h1><div class="panel"><h3>Audio Workspace</h3><textarea placeholder="Describe your audio task..."></textarea><p class="note">Audio integration pending.</p></div></section>
+<section id="development" class="page"><h1>Development Studio</h1><div class="panel"><h3>Developer Workspace</h3><p>Organise your development projects here.</p></div></section>
+<section id="tools" class="page">
+<h1>AI Tool Directory</h1>
+<div class="panel">
+<h3>Original 58-tool catalogue</h3>
+<p class="note">Browse the tools from the original MSTK list. These are catalogue entries, not live integrations. No external provider is currently connected.</p>
+<div class="directory-controls">
+<label for="tool-search">Search tools</label>
+<input id="tool-search" type="search" placeholder="Search by tool name or status..." autocomplete="off">
+<label for="tool-category">Category</label>
+<select id="tool-category">
+<option value="all">All categories</option>
+<option value="Development">Development</option>
+<option value="AI assistants">AI assistants</option>
+<option value="Image & design">Image &amp; design</option>
+<option value="Video & audio">Video &amp; audio</option>
+<option value="Productivity">Productivity</option>
+<option value="Infrastructure">Infrastructure</option>
+</select>
+<p id="tool-count" class="note" aria-live="polite">Loading catalogue…</p>
+</div>
+<div id="tool-list" class="tool-list" aria-live="polite"></div>
+<p class="note">Availability labels reflect preliminary review only. A tool is not marked connected or approved until its terms, age eligibility, cost, privacy, API access and safe integration tests are complete. 18+ or otherwise age-restricted services remain unavailable to under-18 users; no age-check bypass is offered.</p>
+</div>
+</section>
+</main>
+</div>
+<script src="/mstk-config.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
