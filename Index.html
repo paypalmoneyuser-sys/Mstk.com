@@ -58,6 +58,11 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 .shortcut:hover{border-color:#8b5cf6;background:#2b2a42}
 .shortcut strong{color:#e5ddff;font-size:14px}
 .shortcut span{font-size:12px;color:#b9bdd0;line-height:1.4}
+
+.workspace-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:14px}
+.workspace-item{padding:14px;border-radius:10px;background:#242538;border:1px solid #37394e}
+.workspace-item strong{display:block;color:#e5ddff;margin-bottom:6px;overflow-wrap:anywhere}
+.workspace-item span{font-size:12px;color:#b9bdd0}
 </style>
 </head>
 <body>
@@ -130,7 +135,26 @@ button.action.secondary{background:#34334c;border:1px solid #565171}
 </div>
 </section>
 
-<section id="workspace" class="page"><h1>AI Workspace</h1><div class="panel"><h3>New Conversation</h3><textarea id="prompt" placeholder="Write your prompt here..."></textarea><button class="action" onclick="sendPrompt()">Send</button><div id="response"></div><p class="note">The secure AI backend adapter is ready for testing, but live providers remain disabled until an eligible provider is reviewed and configured. No provider is connected yet.</p></div></section>
+<section id="workspace" class="page">
+<h1>AI Workspace</h1>
+<div class="panel">
+<h3>Your Workspaces</h3>
+<p class="note">Create and view workspaces in your configured Supabase database. Access is controlled by the database's row-level security policies.</p>
+<label for="workspace-name">New workspace name</label>
+<input id="workspace-name" type="text" maxlength="100" placeholder="e.g. My Projects">
+<button class="action" id="create-workspace-button" onclick="createWorkspace()">Create workspace</button>
+<button class="action secondary" id="refresh-workspaces-button" onclick="loadWorkspaces()">Refresh list</button>
+<div id="workspace-status" class="status" role="status" aria-live="polite">Sign in to load your workspaces.</div>
+<div id="workspace-list" class="workspace-list" aria-live="polite"></div>
+</div>
+<div class="panel">
+<h3>New AI Conversation</h3>
+<textarea id="prompt" maxlength="12000" placeholder="Write your prompt here..."></textarea>
+<button class="action" onclick="sendPrompt()">Send</button>
+<div id="response"></div>
+<p class="note">The secure AI backend adapter is ready for testing, but live providers remain disabled until an eligible provider is reviewed and configured. No provider is connected yet. Prompts are not saved to workspace history in this preview.</p>
+</div>
+</section>
 <section id="image" class="page"><h1>Image Studio</h1><div class="panel"><h3>Create Images</h3><textarea placeholder="Describe your image..."></textarea><p class="note">Image generation integration pending.</p></div></section>
 <section id="video" class="page"><h1>Video Studio</h1><div class="panel"><h3>Create Videos</h3><textarea placeholder="Describe your video..."></textarea><p class="note">Video generation integration pending.</p></div></section>
 <section id="audio" class="page"><h1>Audio Studio</h1><div class="panel"><h3>Audio Workspace</h3><textarea placeholder="Describe your audio task..."></textarea><p class="note">Audio integration pending.</p></div></section>
@@ -218,6 +242,7 @@ async function authenticate(mode){
         mstkSession=data;
         setSignedIn(true);
         setStatus('Account created and signed in.','good');
+        loadWorkspaces();
       }else{
         setStatus('Sign-up request received. Check your email for the confirmation step. No session has been created yet.','good');
       }
@@ -225,6 +250,7 @@ async function authenticate(mode){
       mstkSession=await authRequest('token?grant_type=password',{email,password});
       setSignedIn(true);
       setStatus('Signed in for this page session.','good');
+      loadWorkspaces();
     }
     document.getElementById('account-password').value='';
   }catch(error){
@@ -257,7 +283,69 @@ async function signOut(){
   }catch{}
   mstkSession=null;
   setSignedIn(false);
+  document.getElementById('workspace-list')?.replaceChildren();
+  setWorkspaceStatus('Sign in to load your workspaces.');
   setStatus('Signed out of this page session.','good');
+}
+
+function setWorkspaceStatus(message,kind=''){
+  const el=document.getElementById('workspace-status');
+  if(!el)return;
+  el.textContent=message;
+  el.className='status'+(kind?' '+kind:'');
+}
+async function workspaceRequest(path,method='GET',body){
+  const config=authConfig();
+  if(!config||!mstkSession?.access_token)throw new Error('Sign in and configure Supabase before accessing workspace data.');
+  const headers={apikey:config.key,authorization:'Bearer '+mstkSession.access_token,accept:'application/json'};
+  const options={method,headers,redirect:'error'};
+  if(body!==undefined){headers['content-type']='application/json';headers.prefer='return=representation';options.body=JSON.stringify(body);}
+  const response=await fetch(config.base+'/rest/v1/'+path,options);
+  const data=await response.json().catch(()=>null);
+  if(!response.ok){
+    if(response.status===404||data?.code==='42P01')throw new Error('Workspace database tables are not available yet. The project owner must apply the reviewed Supabase migrations first.');
+    if(response.status===401||response.status===403)throw new Error('Workspace access was denied. Check your session and database row-level security policies.');
+    throw new Error('Workspace database request failed (HTTP '+response.status+').');
+  }
+  return data;
+}
+async function loadWorkspaces(){
+  const list=document.getElementById('workspace-list');
+  if(!list)return;
+  if(!mstkSession?.access_token){list.replaceChildren();setWorkspaceStatus('Sign in to load your workspaces.');return;}
+  const button=document.getElementById('refresh-workspaces-button');
+  button.disabled=true;
+  setWorkspaceStatus('Loading your workspaces…');
+  try{
+    const rows=await workspaceRequest('workspaces?select=id,name,created_at&order=created_at.desc');
+    list.replaceChildren();
+    for(const workspace of Array.isArray(rows)?rows:[]){
+      const card=document.createElement('article');card.className='workspace-item';
+      const name=document.createElement('strong');name.textContent=workspace.name;
+      const id=document.createElement('span');id.textContent='Workspace ID: '+workspace.id;
+      card.append(name,id);list.append(card);
+    }
+    setWorkspaceStatus(rows.length?('Loaded '+rows.length+' workspace(s).'):'No workspaces yet. Create your first one.','good');
+  }catch(error){
+    list.replaceChildren();
+    setWorkspaceStatus(error.message||'Unable to load workspaces.','error');
+  }finally{button.disabled=false;}
+}
+async function createWorkspace(){
+  const input=document.getElementById('workspace-name');
+  const button=document.getElementById('create-workspace-button');
+  const name=input.value.trim();
+  if(!name||name.length>100){setWorkspaceStatus('Enter a workspace name between 1 and 100 characters.','error');return;}
+  if(!mstkSession?.access_token||!mstkSession?.user?.id){setWorkspaceStatus('Sign in before creating a workspace.','error');return;}
+  button.disabled=true;
+  try{
+    await workspaceRequest('workspaces','POST',{name,owner_id:mstkSession.user.id});
+    input.value='';
+    setWorkspaceStatus('Workspace created.','good');
+    await loadWorkspaces();
+  }catch(error){
+    setWorkspaceStatus(error.message||'Unable to create workspace.','error');
+  }finally{button.disabled=false;}
 }
 async function sendPrompt(){
   const value=document.getElementById('prompt').value.trim();
