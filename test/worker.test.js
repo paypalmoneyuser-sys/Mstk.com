@@ -87,6 +87,17 @@ test("API rejects requests larger than one MiB", async () => {
   assert.equal(response.status, 413);
 });
 
+test("API rejects oversized streamed bodies even when Content-Length is forged", async () => {
+  const oversizedBody = "x".repeat(1_048_577);
+  const response = await worker.fetch(new Request("https://api.example/api/private", {
+    method: "POST",
+    headers: { "Content-Length": "1" },
+    body: oversizedBody,
+  }), env);
+  assert.equal(response.status, 413);
+  assert.deepEqual(await response.json(), { error: "request_body_too_large" });
+});
+
 test("protected API rejects missing bearer token", async () => {
   const response = await worker.fetch(new Request("https://api.example/api/me"), {
     ...env, SUPABASE_URL: "https://project.supabase.co",
