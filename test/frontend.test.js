@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
-const html = await readFile(new URL("../Index.html", import.meta.url), "utf8");
+const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const schema = await readFile(new URL("../supabase/migrations/0001_initial_workspace_schema.sql", import.meta.url), "utf8");
 const frontendConfigTemplate = await readFile(new URL("../mstk-config.example.js", import.meta.url), "utf8");
 const gitignore = await readFile(new URL("../.gitignore", import.meta.url), "utf8");
