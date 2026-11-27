@@ -276,7 +276,7 @@ test("local frontend config is ignored by Git and example contains no real crede
 });
 
 test("frontend uses delegated data-action events and contains no inline event handlers", () => {
-  assert.doesNotMatch(html, /\\son[a-z]+\\s*=/i);
+  assert.doesNotMatch(html, /\son[a-z]+\s*=/i);
   assert.match(html, /document\.addEventListener\('click'/);
   for (const action of ["show", "signin", "signup", "recover", "signout", "complete-recovery", "verify-session", "create-workspace", "load-workspaces", "create-project", "create-conversation", "start-comparison", "choose-response", "reveal-comparison", "send-prompt"]) {
     assert.ok(html.includes('data-mstk-action="' + action + '"'), "missing action " + action);
