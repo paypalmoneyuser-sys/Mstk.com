@@ -14,6 +14,8 @@ Supabase Auth must issue asymmetric ES256 or RS256 access tokens and expose its 
 - JWKS signature verification for ES256 and RS256.
 - Issuer, audience, role, subject UUID, expiry, not-before, and issued-at checks.
 - Five-minute in-isolate JWKS cache.
+- Browser tracks Supabase access-token expiry and attempts refresh-token rotation in memory before protected database and API requests; failed refresh clears the in-memory session.
+- Session and refresh token are not persisted across page reloads; durable session restoration and full revocation handling remain outstanding.
 - Protected `GET /api/me` returns only verified user ID and role.
 - Protected `POST /api/ai/chat` accepts a prompt and calls one configured OpenAI-style chat-completions endpoint server-side.
 - AI route is disabled unless `MSTK_AI_ENABLED=true`; validates HTTPS endpoint, requires a server-side API key and model, caps prompt at 12,000 characters, and applies a 30-second timeout.
