@@ -196,7 +196,32 @@ async function verifySupabaseAccessToken(request, env) {
   }
 }
 
-async function handleAiChat(request, env, cors) {
+async function supabaseServiceRequest(env, path, init = {}) {
+  if (typeof env.SUPABASE_URL !== "string" ||
+      typeof env.SUPABASE_SERVICE_ROLE_KEY !== "string" ||
+      !env.SUPABASE_SERVICE_ROLE_KEY.trim()) {
+    throw new Error("database_not_configured");
+  }
+  const { issuer } = getSupabaseConfig(env.SUPABASE_URL);
+  const base = issuer.replace(/\/auth\/v1$/, "");
+  const response = await fetch(new URL("/rest/v1/" + path, base).toString(), {
+    ...init,
+    headers: {
+      apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+      authorization: "Bearer " + env.SUPABASE_SERVICE_ROLE_KEY,
+      accept: "application/json",
+      ...(init.body ? { "content-type": "application/json" } : {}),
+      ...(init.headers || {}),
+    },
+    redirect: "error",
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response.ok) throw new Error("database_request_failed");
+  if (response.status === 204) return null;
+  return response.json();
+}
+
+async function handleAiChat(request, env, cors, user) {
   if (env.MSTK_AI_ENABLED !== "true") {
     return json({ error: "ai_provider_not_enabled" }, 503, cors);
   }
@@ -224,9 +249,66 @@ async function handleAiChat(request, env, cors) {
   } catch {
     return json({ error: "invalid_json" }, 400, cors);
   }
-  if (!body || typeof body.prompt !== "string" ||
-      !body.prompt.trim() || body.prompt.length > 12000) {
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!body || typeof body !== "object" ||
+      typeof body.prompt !== "string" || !body.prompt.trim() || body.prompt.length > 12000) {
     return json({ error: "invalid_prompt" }, 400, cors);
+  }
+  if (typeof body.workspaceId !== "string" || !uuid.test(body.workspaceId) ||
+      typeof body.conversationId !== "string" || !uuid.test(body.conversationId)) {
+    return json({ error: "invalid_chat_request" }, 400, cors);
+  }
+
+  let history;
+  try {
+    const membershipQuery = new URLSearchParams({
+      select: "workspace_id",
+      workspace_id: "eq." + body.workspaceId,
+      user_id: "eq." + user.id,
+      limit: "1",
+    });
+    const memberships = await supabaseServiceRequest(env, "workspace_members?" + membershipQuery);
+    if (!Array.isArray(memberships) || memberships.length !== 1) {
+      return json({ error: "workspace_access_denied" }, 403, cors);
+    }
+
+    const conversationQuery = new URLSearchParams({
+      select: "id,workspace_id",
+      id: "eq." + body.conversationId,
+      workspace_id: "eq." + body.workspaceId,
+      limit: "1",
+    });
+    const conversations = await supabaseServiceRequest(env, "conversations?" + conversationQuery);
+    if (!Array.isArray(conversations) || conversations.length !== 1) {
+      return json({ error: "conversation_not_found" }, 404, cors);
+    }
+
+    const messagesQuery = new URLSearchParams({
+      select: "role,content,created_at",
+      conversation_id: "eq." + body.conversationId,
+      workspace_id: "eq." + body.workspaceId,
+      order: "created_at.desc",
+      limit: "20",
+    });
+    const recentMessages = await supabaseServiceRequest(env, "messages?" + messagesQuery);
+    if (!Array.isArray(recentMessages) || recentMessages.length === 0 ||
+        recentMessages[0].role !== "user" || recentMessages[0].content !== body.prompt) {
+      return json({ error: "latest_user_message_missing" }, 409, cors);
+    }
+
+    // Keep the newest context first while enforcing a bounded prompt budget.
+    let remaining = 24000;
+    const bounded = [];
+    for (const message of recentMessages) {
+      if (!["user", "assistant"].includes(message.role) ||
+          typeof message.content !== "string" || remaining <= 0) continue;
+      const content = message.content.slice(-Math.min(remaining, 12000));
+      bounded.push({ role: message.role, content });
+      remaining -= content.length;
+    }
+    history = bounded.reverse();
+  } catch {
+    return json({ error: "workspace_database_unavailable" }, 503, cors);
   }
 
   try {
@@ -239,7 +321,7 @@ async function handleAiChat(request, env, cors) {
       },
       body: JSON.stringify({
         model: env.MSTK_AI_MODEL,
-        messages: [{ role: "user", content: body.prompt }],
+        messages: history,
         max_tokens: 1024,
       }),
       redirect: "error",
@@ -250,12 +332,25 @@ async function handleAiChat(request, env, cors) {
     }
     const result = await response.json();
     const answer = result?.choices?.[0]?.message?.content;
-    if (typeof answer !== "string" || !answer.trim()) {
+    if (typeof answer !== "string" || !answer.trim() || answer.length > 100000) {
       return json({ error: "ai_provider_response_invalid" }, 502, cors);
     }
-    return json({ answer, model: env.MSTK_AI_MODEL }, 200, cors);
+
+    const insertQuery = new URLSearchParams({ select: "id" });
+    await supabaseServiceRequest(env, "messages?" + insertQuery, {
+      method: "POST",
+      headers: { prefer: "return=minimal" },
+      body: JSON.stringify({
+        conversation_id: body.conversationId,
+        workspace_id: body.workspaceId,
+        created_by: user.id,
+        role: "assistant",
+        content: answer,
+      }),
+    });
+    return json({ answer, model: env.MSTK_AI_MODEL, saved: true }, 200, cors);
   } catch {
-    return json({ error: "ai_provider_unavailable" }, 502, cors);
+    return json({ error: "ai_response_not_saved" }, 503, cors);
   }
 }
 
@@ -299,7 +394,7 @@ export default {
     }
     if (url.pathname === "/api/ai/chat") {
       if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, cors);
-      return handleAiChat(request, env, cors);
+      return handleAiChat(request, env, cors, auth.user);
     }
     return json({ error: "not_found" }, 404, cors);
   },

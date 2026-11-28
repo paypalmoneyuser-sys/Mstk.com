@@ -55,6 +55,8 @@ test("MSTK protected API verification uses a separately configured API base URL"
 
 test("AI workspace sends prompts only through the authenticated MSTK API", () => {
   assert.match(source, /new URL\('\/api\/ai\/chat',config\.apiBase\)/);
+  assert.match(source, /data\.saved!==true/);
+  assert.match(source, /await loadMessages\(\)/);
   assert.match(source, /authorization:'Bearer '\+mstkSession\.access_token/);
   assert.match(source, /AI provider is not enabled yet/);
 });
@@ -146,7 +148,7 @@ test("workspace supports conversation creation and selected conversation history
 test("user messages are saved only to the selected conversation and rendered as text", () => {
   assert.match(source, /conversation_id:selectedConversation\.id,workspace_id:selectedWorkspace\.id,created_by:mstkSession\.user\.id,role:'user',content:value/);
   assert.match(source, /content\.textContent=message\.content/);
-  assert.match(source, /AI replies are not saved yet/);
+  assert.match(source, /workspaceId:selectedWorkspace\.id,conversationId:selectedConversation\.id/);
 });
 
 test("workspace state is cleared on sign out", () => {
