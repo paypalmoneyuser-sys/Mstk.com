@@ -250,9 +250,11 @@ async function handleAiChat(request, env, cors, user) {
     return json({ error: "invalid_json" }, 400, cors);
   }
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  if (!body || typeof body.prompt !== "string" ||
-      !body.prompt.trim() || body.prompt.length > 12000 ||
-      typeof body.workspaceId !== "string" || !uuid.test(body.workspaceId) ||
+  if (!body || typeof body !== "object" ||
+      typeof body.prompt !== "string" || !body.prompt.trim() || body.prompt.length > 12000) {
+    return json({ error: "invalid_prompt" }, 400, cors);
+  }
+  if (typeof body.workspaceId !== "string" || !uuid.test(body.workspaceId) ||
       typeof body.conversationId !== "string" || !uuid.test(body.conversationId)) {
     return json({ error: "invalid_chat_request" }, 400, cors);
   }
