@@ -407,13 +407,14 @@ async function sendPrompt(){
     const result=await fetch(endpoint.toString(),{
       method:'POST',
       headers:{'content-type':'application/json',authorization:'Bearer '+mstkSession.access_token},
-      body:JSON.stringify({prompt:value}),
+      body:JSON.stringify({prompt:value,workspaceId:selectedWorkspace.id,conversationId:selectedConversation.id}),
       redirect:'error'
     });
     const data=await result.json().catch(()=>({}));
     if(!result.ok)throw new Error(data.error==='ai_provider_not_enabled'?'AI provider is not enabled yet.':data.error==='ai_provider_not_configured'?'AI provider configuration is incomplete.':'MSTK AI request failed (HTTP '+result.status+').');
-    if(typeof data.answer!=='string')throw new Error('MSTK returned an invalid AI response.');
+    if(typeof data.answer!=='string'||data.saved!==true)throw new Error('MSTK did not confirm that the AI response was saved.');
     note.textContent=data.answer;
+    await loadMessages();
   }catch(error){
     note.textContent=error.message||'MSTK AI is temporarily unavailable.';
     note.classList.add('error');
